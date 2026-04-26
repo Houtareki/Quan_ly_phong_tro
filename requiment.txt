@@ -1,0 +1,67 @@
+# Web quản lý nhà trọ
+
+## Công nghệ sử dụng
+
+- Frontend: ReactJS, Vite, Axios, React Router DOM, Bootstrap
+- Backend: Node.js, Express.js, MongoDB, Mongoose
+- Database: MongoDB local
+- Tool: GitHub, Postman, MongoDB Compass
+
+## Cấu hình database
+
+Dùng chung tên database:
+```
+quan_ly_phong_tro
+````
+
+Tạo file `backend/.env` (giống file mẫu backend/.env.example):
+
+```env
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/quan_ly_phong_tro
+```
+
+## Chạy backend
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+Backend chạy tại:
+```
+http://localhost:5000
+```
+
+## Chạy frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend thường chạy tại:
+```
+http://localhost:5173
+```
+
+## Lưu ý khi push code
+
+Không push các file/thư mục sau:
+
+```txt
+node_modules/
+.env
+dist/
+build/
+```
+
+Mỗi thành viên clone project về cần tự chạy `npm install` trong `backend` và `frontend`.
+
+````
+
+Còn `frontend/.env` thì chưa cần ghi nếu chưa làm API. Sau này cần gọi backend thì thêm sau:
+
+VITE_API_URL=http://localhost:5000/api
