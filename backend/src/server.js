@@ -2,6 +2,10 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./configs/db.js";
+import "./models/User.js";
+import "./models/Room.js";
+import "./models/Contract.js";
+import invoiceRoutes from "./routes/invoiceRoutes.js";
 
 dotenv.config();
 
@@ -13,6 +17,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Backend quản lý phòng trọ đang chạy");
 });
+
+app.use("/api/invoices", invoiceRoutes);
 
 const PORT = process.env.PORT || 5000;
 
