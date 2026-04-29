@@ -1,0 +1,114 @@
+.invoice-page {
+  background: #f6fbf8;
+  color: #1f2937;
+}
+
+.invoice-sidebar {
+  background: #e9f7f1;
+  border-right: 1px solid #d7eee4;
+}
+
+.sidebar-brand {
+  color: #0f7f5f;
+}
+
+.sidebar-btn {
+  color: #0f7f5f;
+  text-align: left;
+  font-weight: 600;
+  border-radius: 12px;
+  background: transparent;
+  border: none;
+}
+
+.sidebar-btn i {
+  font-size: 1.25rem;
+  color: #0f7f5f;
+}
+
+.sidebar-btn:hover,
+.sidebar-btn:active {
+  background: #d7f1e6;
+  color: #0b6a4f;
+}
+
+.sidebar-btn:hover i,
+.sidebar-btn.active i {
+  color: #0b6a4f;
+}
+
+.create-invoice-btn {
+  background: #0f8f68;
+  color: white;
+  border: none;
+  border-radius: 12px;
+}
+
+.create-invoice-btn:hover {
+  background: #0c7958;
+  color: white;
+}
+
+.filter-btn {
+  background: #ffffff;
+  color: #46685a;
+  border: 1px solid #d5e9df;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.filter-btn.active {
+  background: #e3f6ed;
+  color: #0f7f5f;
+  border-color: #bfe5d4;
+}
+
+.invoice-card {
+  transition: 0.2s ease;
+}
+
+.invoice-card:hover {
+  transform: translateY(-2px);
+}
+
+.invoice-total {
+  font-size: 18px;
+  color: #0f7f5f;
+}
+
+.confirm-paid-btn {
+  background: #27a05d;
+  color: white;
+  border: none;
+  border-radius: 10px;
+}
+
+.confirm-paid-btn:hover {
+  background: #21864e;
+  color: white;
+}
+
+.status-pill {
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.status-unpaid {
+  background: #fff3f4;
+  border-color: #f3c5cf;
+  color: #d05b72;
+}
+
+.status-paid {
+  background: #edf9f2;
+  color: #2f9e68;
+  border-color: #bfe5cd;
+}
+
+.status-partial {
+  background: #fff8e8;
+  color: #b78103;
+  border-color: #f0d58a;
+}
