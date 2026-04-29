@@ -1,0 +1,139 @@
+.back-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid #d8eee5;
+  background: white;
+  color: #0f7f5f;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-btn:hover {
+  background: #dff4ea;
+  color: #0c6b50;
+}
+
+.invoice-form-card {
+  background: #ffffff;
+}
+
+.form-control-custom {
+  border: 1px solid #cfe7dc;
+  border-radius: 12px;
+  padding: 11px 14px;
+}
+
+.form-control-custom:focus {
+  border-color: #0f8f68;
+  box-shadow: 0 0 0 0.2rem rgba(15, 143, 104, 0.12);
+}
+
+.room-price-box {
+  background: linear-gradient(135deg, #d9fff0, #bff4df);
+  border: 1px solid #b9ead8;
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.room-price-box h5 {
+  color: #0f7f5f;
+}
+
+.room-price-box i {
+  font-size: 28px;
+  color: #0f7f5f;
+}
+
+.section-title {
+  font-weight: 800;
+  color: #10251d;
+  display: flex;
+  align-items: center;
+}
+
+.service-box {
+  border: 1px solid #d8eee5;
+  border-radius: 16px;
+  padding: 10px 16px;
+  background: #fbfffd;
+}
+
+.service-item {
+  padding: 12px 0;
+  margin: 0;
+}
+
+.service-item:not(:last-child) {
+  border-bottom: 1px solid #edf6f1;
+}
+
+.service-item .form-check-input {
+  border-color: #9ccfba;
+  cursor: pointer;
+}
+
+.service-item .form-check-input:checked {
+  background-color: #0f8f68;
+  border-color: #0f8f68;
+}
+
+.service-item .form-check-label {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  color: #34443e;
+}
+
+.service-item strong {
+  color: #0f7f5f;
+}
+
+.total-box {
+  background: #0f8f68;
+  color: white;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 22px rgba(15, 143, 104, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.total-box span {
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.total-box strong {
+  font-size: 28px;
+}
+
+.cancel-btn {
+  color: #0f7f5f;
+  background: #eef9f4;
+  border-radius: 12px;
+  padding: 10px 20px;
+}
+
+.cancel-btn:hover {
+  color: #0c6b50;
+  background: #dff4ea;
+}
+
+.save-invoice-btn {
+  background: #0f8f68;
+  color: white;
+  border-radius: 12px;
+  padding: 10px 22px;
+}
+
+.save-invoice-btn:hover {
+  background: #0c7958;
+  color: white;
+}
