@@ -1,0 +1,23 @@
+.invoice-card {
+  transition: 0.2s ease;
+}
+
+.invoice-card:hover {
+  transform: translateY(-2px);
+}
+.confirm-paid-btn {
+  background: #27a05d;
+  color: white;
+  border: none;
+  border-radius: 10px;
+}
+
+.confirm-paid-btn:hover {
+  background: #21864e;
+  color: white;
+}
+
+.invoice-total {
+  font-size: 18px;
+  color: #0f7f5f;
+}

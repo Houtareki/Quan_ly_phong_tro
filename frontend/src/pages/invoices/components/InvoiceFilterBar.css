@@ -1,0 +1,13 @@
+.filter-btn {
+  background: #ffffff;
+  color: #46685a;
+  border: 1px solid #d5e9df;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.filter-btn.active {
+  background: #e3f6ed;
+  color: #0f7f5f;
+  border-color: #bfe5d4;
+}

@@ -1,0 +1,24 @@
+.status-pill {
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.status-unpaid {
+  background: #fff3f4;
+  border-color: #f3c5cf;
+  color: #d05b72;
+}
+
+.status-paid {
+  background: #edf9f2;
+  color: #2f9e68;
+  border-color: #bfe5cd;
+}
+
+.status-partial {
+  background: #fff8e8;
+  color: #b78103;
+  border-color: #f0d58a;
+}
