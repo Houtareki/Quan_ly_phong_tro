@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import "./InvoiceListPage.css";
 import "./CreateInvoicePage.css";
 
@@ -63,6 +63,11 @@ const CreateInvoicePage = () => {
     selectedServices: ["trash", "wifi"],
   });
 
+  const navigate = useNavigate();
+
+  const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+
   const selectedRoom = roomOptions.find((room) => room.id === formData.roomId);
 
   const selectedServiceFees = serviceOptions.filter((service) =>
@@ -98,6 +103,13 @@ const CreateInvoicePage = () => {
       ...prev,
       [name]: value,
     }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+
+    setSuccessMessage("");
   };
 
   const handleServiceChange = (serviceId) => {
@@ -111,6 +123,104 @@ const CreateInvoicePage = () => {
           : [...prev.selectedServices, serviceId],
       };
     });
+
+    setSuccessMessage("");
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.roomId) {
+      newErrors.roomId = "Vui lòng chọn phòng";
+    }
+
+    if (!formData.month || formData.month < 1 || formData.month > 12) {
+      newErrors.month = "Vui lòng nhập tháng hợp lệ (1-12)";
+    }
+
+    if (!formData.year || formData.year < 2000) {
+      newErrors.year = "Vui lòng nhập năm hợp lệ (>= 2000)";
+    }
+
+    if (Number(formData.oldElectric) < 0) {
+      newErrors.oldElectric = "Chỉ số điện không được âm";
+    }
+
+    if (Number(formData.newElectric) < 0) {
+      newErrors.newElectric = "Chỉ số điện không được âm";
+    }
+
+    if (Number(formData.oldWater) < 0) {
+      newErrors.oldWater = "Chỉ số nước không được âm";
+    }
+
+    if (Number(formData.newWater) < 0) {
+      newErrors.newWater = "Chỉ số nước không được âm";
+    }
+
+    if (Number(formData.oldElectric) > Number(formData.newElectric)) {
+      newErrors.newElectric =
+        "Chỉ số điện mới phải lớn hơn hoặc bằng chỉ số cũ";
+    }
+
+    if (Number(formData.oldWater) > Number(formData.newWater)) {
+      newErrors.newWater = "Chỉ số nước mới phải lớn hơn hoặc bằng chỉ số cũ";
+    }
+
+    if (Number(formData.electricPrice) < 0) {
+      newErrors.electricPrice = "Đơn giá điện không được âm";
+    }
+
+    if (Number(formData.waterPrice) < 0) {
+      newErrors.waterPrice = "Đơn giá nước không được âm";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    setSuccessMessage("");
+
+    const isValid = validateForm();
+
+    if (!isValid) {
+      return;
+    }
+
+    setSuccessMessage("Hóa đơn đã được tạo thành công!");
+
+    console.log("Dữ liệu hóa đơn:", {
+      contractId: "sau-nay-lay-tu-api-hop-dong",
+      roomId: formData.roomId,
+      tenantId: "sau-nay-lay-tu-api-hop-dong",
+      month: Number(formData.month),
+      year: Number(formData.year),
+      roomPrice: selectedRoom?.roomPrice || 0,
+      utilityReading: {
+        oldElectric: Number(formData.oldElectric),
+        newElectric: Number(formData.newElectric),
+        electricPrice: Number(formData.electricPrice),
+        oldWater: Number(formData.oldWater),
+        newWater: Number(formData.newWater),
+        waterPrice: Number(formData.waterPrice),
+      },
+      serviceFees: selectedServiceFees.map((service) => ({
+        name: service.name,
+        price: service.price,
+        quantity: 1,
+      })),
+    });
+  };
+
+  const getInputClass = (fieldName) => {
+    return `form-control form-control-custom ${errors[fieldName] ? "is-invalid" : ""}`;
+  };
+
+  const getSelectClass = (fieldName) => {
+    return `form-select form-control-custom ${errors[fieldName] ? "is-invalid" : ""}`;
   };
 
   return (
@@ -149,7 +259,11 @@ const CreateInvoicePage = () => {
 
         <main className="col-12 col-lg-10 p-4">
           <div className="d-flex align-items-center gap-3 mb-4">
-            <button className="btn back-btn">
+            <button
+              type="button"
+              className="btn back-btn"
+              onClick={() => navigate("/invoices")}
+            >
               <i className="bi bi-arrow-left"></i>
             </button>
           </div>
@@ -167,13 +281,26 @@ const CreateInvoicePage = () => {
             <div className="col-12 col-xl-9">
               <div className="card border-0 shadow-sm rounded-4 invoice-form-card">
                 <div className="card-body p-4">
-                  <form>
+                  <form onSubmit={handleSubmit}>
+                    {successMessage && (
+                      <div className="alert alert-success rounded-4">
+                        <i className="bi bi-check-circle-fill me-2"></i>
+                        {successMessage}
+                      </div>
+                    )}
+
+                    {Object.keys(errors).length > 0 && (
+                      <div className="alert alert-danger rounded-4">
+                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                        Vui lòng sửa các lỗi trong biểu mẫu
+                      </div>
+                    )}
                     <div className="mb-4">
                       <label className="form-label fw-bold">Chọn phòng</label>
 
                       <select
                         name="roomId"
-                        className="form-select form-control-custom"
+                        className={getSelectClass("roomId")}
                         value={formData.roomId}
                         onChange={handleChange}
                       >
@@ -189,7 +316,7 @@ const CreateInvoicePage = () => {
                       <div className="col-12 col-md-6">
                         <label className="form-label fw-bold">Tháng</label>
                         <select
-                          className="form-select form-control-custom"
+                          className={getSelectClass("month")}
                           name="month"
                           value={formData.month}
                           onChange={handleChange}
@@ -208,11 +335,14 @@ const CreateInvoicePage = () => {
                         <label className="form-label fw-bold">Năm</label>
                         <input
                           type="number"
-                          className="form-control form-control-custom"
+                          className={getInputClass("year")}
                           name="year"
                           value={formData.year}
                           onChange={handleChange}
                         />
+                        {errors.year && (
+                          <div className="invalid-feedback">{errors.year}</div>
+                        )}
                       </div>
                     </div>
 
@@ -237,33 +367,48 @@ const CreateInvoicePage = () => {
                         <label className="form-label">Số điện cũ</label>
                         <input
                           type="number"
-                          className="form-control form-control-custom"
+                          className={getInputClass("oldElectric")}
                           name="oldElectric"
                           value={formData.oldElectric}
                           onChange={handleChange}
                         />
+                        {errors.oldElectric && (
+                          <div className="invalid-feedback">
+                            {errors.oldElectric}
+                          </div>
+                        )}
                       </div>
 
                       <div className="col-12 col-md-4">
                         <label className="form-label">Số điện mới</label>
                         <input
                           type="number"
-                          className="form-control form-control-custom"
+                          className={getInputClass("newElectric")}
                           name="newElectric"
                           value={formData.newElectric}
                           onChange={handleChange}
                         />
+                        {errors.newElectric && (
+                          <div className="invalid-feedback">
+                            {errors.newElectric}
+                          </div>
+                        )}
                       </div>
 
                       <div className="col-12 col-md-4">
                         <label className="form-label">Đơn giá điện</label>
                         <input
                           type="number"
-                          className="form-control form-control-custom"
+                          className={getInputClass("electricPrice")}
                           name="electricPrice"
                           value={formData.electricPrice}
                           onChange={handleChange}
                         />
+                        {errors.electricPrice && (
+                          <div className="invalid-feedback">
+                            {errors.electricPrice}
+                          </div>
+                        )}
                       </div>
 
                       <div className="text-end text-muted mb-4">
@@ -280,33 +425,48 @@ const CreateInvoicePage = () => {
                         <label className="form-label">Số nước cũ</label>
                         <input
                           type="number"
-                          className="form-control form-control-custom"
+                          className={getInputClass("oldWater")}
                           name="oldWater"
                           value={formData.oldWater}
                           onChange={handleChange}
                         />
+                        {errors.oldWater && (
+                          <div className="invalid-feedback">
+                            {errors.oldWater}
+                          </div>
+                        )}
                       </div>
 
                       <div className="col-12 col-md-4">
                         <label className="form-label">Số nước mới</label>
                         <input
                           type="number"
-                          className="form-control form-control-custom"
+                          className={getInputClass("newWater")}
                           name="newWater"
                           value={formData.newWater}
                           onChange={handleChange}
                         />
+                        {errors.newWater && (
+                          <div className="invalid-feedback">
+                            {errors.newWater}
+                          </div>
+                        )}
                       </div>
 
                       <div className="col-12 col-md-4">
                         <label className="form-label">Đơn giá nước</label>
                         <input
                           type="number"
-                          className="form-control form-control-custom"
+                          className={getInputClass("waterPrice")}
                           name="waterPrice"
                           value={formData.waterPrice}
                           onChange={handleChange}
                         />
+                        {errors.waterPrice && (
+                          <div className="invalid-feedback">
+                            {errors.waterPrice}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -349,11 +509,15 @@ const CreateInvoicePage = () => {
                     </div>
 
                     <div className="d-flex justify-content-end gap-2">
-                      <button type="button" className="btn cancel-btn fw-bold">
+                      <button
+                        type="button"
+                        className="btn cancel-btn fw-bold"
+                        onClick={() => navigate("/invoices")}
+                      >
                         Hủy
                       </button>
                       <button
-                        type="button"
+                        type="submit"
                         className="btn save-invoice-btn fw-bold"
                       >
                         Lưu
