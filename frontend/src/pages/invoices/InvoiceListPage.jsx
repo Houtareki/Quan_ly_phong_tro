@@ -1,17 +1,37 @@
+import { useEffect, useState } from "react";
+import { getInvoices } from "./services/invoiceApi";
 import { useNavigate } from "react-router-dom";
+import { useInvoiceFilter } from "./hooks/useInvoiceFilter";
+
 import AppLayout from "../../components/layout/AppLayout";
 import PageHeader from "../../components/common/PageHeader";
 import InvoiceCard from "../invoices/components/InvoiceCard";
 import InvoiceFilterBar from "./components/InvoiceFilterBar";
-import { sampleInvoices } from "./data/invoice.mock";
-import { useInvoiceFilter } from "./hooks/useInvoiceFilter";
 import "./InvoiceListPage.css";
 
 const InvoiceListPage = () => {
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        const data = await getInvoices();
+        setInvoices(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInvoices();
+  }, []);
+
   const navigate = useNavigate();
 
-  const { filter, setFilter, filteredInvoices } =
-    useInvoiceFilter(sampleInvoices);
+  const { filter, setFilter, filteredInvoices } = useInvoiceFilter(invoices);
 
   return (
     <AppLayout>
@@ -30,6 +50,9 @@ const InvoiceListPage = () => {
       />
 
       <InvoiceFilterBar filter={filter} onFilterChange={setFilter} />
+
+      {loading && <div className="text-muted">Đang tải hóa đơn...</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="row g-3">
         {filteredInvoices.map((invoice) => (

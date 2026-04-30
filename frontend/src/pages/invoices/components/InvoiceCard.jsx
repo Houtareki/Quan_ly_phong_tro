@@ -10,7 +10,7 @@ const InvoiceCard = ({ invoice }) => {
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-start mb-3">
             <div>
-              <h5 className="fw-bold mb-1">{invoice.roomName}</h5>
+              <h5 className="fw-bold mb-1">Phòng {invoice.roomName}</h5>
               <p className="text-muted mb-0">
                 Tháng {String(invoice.month).padStart(2, "0")}/{invoice.year}
               </p>
@@ -26,7 +26,7 @@ const InvoiceCard = ({ invoice }) => {
             </div>
           </div>
 
-          <div className="d-flex justify-content-between">
+          <div className="d-flex justify-content-between mb-3">
             <span className="text-muted">Tổng tiền</span>
             <span className="fw-bold invoice-total">
               {formatCurrency(invoice.totalAmount)}
