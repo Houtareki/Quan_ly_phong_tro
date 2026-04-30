@@ -3,26 +3,24 @@ export const calculateElectricCost = (
   newElectric,
   electricPrice,
 ) => {
-  return (
-    Math.max(0, Number(newElectric) - Number(oldElectric)) *
-    Number(electricPrice || 0)
-  );
+  const usedElectric = Math.max(Number(newElectric) - Number(oldElectric), 0);
+
+  return usedElectric * Number(electricPrice || 0);
 };
 
 export const calculateWaterCost = (oldWater, newWater, waterPrice) => {
-  return (
-    Math.max(0, Number(newWater) - Number(oldWater)) * Number(waterPrice || 0)
-  );
+  const usedWater = Math.max(Number(newWater) - Number(oldWater), 0);
+
+  return usedWater * Number(waterPrice || 0);
 };
 
-export const serviceCost = (services = []) => {
-  return services.reduce(
-    (total, service) => total + Number(service.price || 0),
-    0,
-  );
+export const calculateServiceCost = (services = []) => {
+  return services.reduce((total, service) => {
+    return total + Number(service.price || 0);
+  }, 0);
 };
 
-export const totalCost = (
+export const calculateInvoiceTotal = (
   roomPrice = 0,
   electricCost = 0,
   waterCost = 0,
