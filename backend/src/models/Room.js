@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ROOM_STATUS } from "../constants/enums.js";
 
 const assetSchema = new mongoose.Schema(
   {
@@ -41,8 +42,8 @@ const roomSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["AVAILABLE", "RENTED", "MAINTENANCE"],
-    default: "AVAILABLE",
+    enum: Object.values(ROOM_STATUS),
+    default: ROOM_STATUS.AVAILABLE,
   },
   assets: [assetSchema],
   services: [serviceSchema],

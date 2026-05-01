@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { roomOptions, serviceOptions } from "./data/invoice.mock";
+import { serviceOptions } from "./data/invoice.mock";
 import { useCreateInvoiceForm } from "./hooks/useCreateInvoiceForm";
+import { getActiveContracts } from "./services/invoiceApi";
 
 import AppLayout from "../../components/layout/AppLayout";
 import InvoiceForm from "./components/InvoiceForm";
@@ -9,7 +11,18 @@ import "./InvoiceListPage.css";
 import "./CreateInvoicePage.css";
 
 const CreateInvoicePage = () => {
+  const [roomOptions, setRoomOptions] = useState([]);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchContracts = async () => {
+      const rooms = await getActiveContracts();
+      setRoomOptions(rooms);
+    };
+
+    fetchContracts();
+  }, []);
 
   const formState = useCreateInvoiceForm(roomOptions, serviceOptions);
 

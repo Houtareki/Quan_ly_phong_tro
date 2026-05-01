@@ -14,6 +14,8 @@ const InvoiceForm = ({ roomOptions, serviceOptions, formState, onCancel }) => {
     formData,
     errors,
     successMessage,
+    submitError,
+    isSubmitting,
 
     selectedRoom,
     electricCost,
@@ -45,6 +47,12 @@ const InvoiceForm = ({ roomOptions, serviceOptions, formState, onCancel }) => {
                 variant="danger"
                 iconClass="bi-exclamation-triangle-fill"
                 message={hasErrors ? "Vui lòng sửa các lỗi trong biểu mẫu" : ""}
+              />
+
+              <FormAlert
+                variant="danger"
+                iconClass="bi-exclamation-triangle-fill"
+                message={submitError}
               />
 
               <RoomSelector
@@ -108,8 +116,12 @@ const InvoiceForm = ({ roomOptions, serviceOptions, formState, onCancel }) => {
                 >
                   Hủy
                 </button>
-                <button type="submit" className="btn save-invoice-btn fw-bold">
-                  Lưu
+                <button
+                  type="submit"
+                  className="btn save-invoice-btn fw-bold"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Đang lưu..." : "Lưu"}
                 </button>
               </div>
             </form>

@@ -148,6 +148,12 @@ export const createInvoice = async (req, res) => {
       .status(201)
       .json({ message: "Tạo hóa đơn thành công", invoice: newInvoice });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        message: "Hóa đơn tháng này đã tồn tại cho hợp đồng này",
+      });
+    }
+
     res.status(500).json({ message: "Lỗi tạo hóa đơn", error: error.message });
   }
 };

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { SUPPORT_STATUS } from "../constants/enums.js";
 
 const supportRequestSchema = new mongoose.Schema(
   {
@@ -24,8 +25,8 @@ const supportRequestSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["PENDING", "PROCESSING", "DONE", "CANCELLED"],
-      default: "PENDING",
+      enum: Object.values(SUPPORT_STATUS),
+      default: SUPPORT_STATUS.PENDING,
     },
   },
   { timestamps: true },

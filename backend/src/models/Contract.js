@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { CONTRACT_STATUS } from "../constants/enums.js";
 
 const contractSchema = new mongoose.Schema(
   {
@@ -32,8 +33,8 @@ const contractSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["ACTIVE", "EXPIRED", "CANCELLED"],
-      default: "ACTIVE",
+      enum: Object.values(CONTRACT_STATUS),
+      default: CONTRACT_STATUS.ACTIVE,
     },
     notes: {
       type: String,

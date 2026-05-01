@@ -6,6 +6,8 @@ import "./models/User.js";
 import "./models/Room.js";
 import "./models/Contract.js";
 import invoiceRoutes from "./routes/invoiceRoutes.js";
+import roomRoutes from "./routes/roomRoutes.js";
+import contractRoutes from "./routes/contractRoutes.js";
 
 dotenv.config();
 
@@ -19,6 +21,8 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/invoices", invoiceRoutes);
+app.use("/api/rooms", roomRoutes);
+app.use("/api/contracts", contractRoutes);
 
 const PORT = process.env.PORT || 5000;
 

@@ -4,9 +4,9 @@ export const buildInvoicePayload = (
   selectedServiceFees,
 ) => {
   return {
-    contractId: "sau-nay-lay-tu-api-hop-dong",
-    roomId: formData.roomId,
-    tenantId: "sau-nay-lay-tu-api-hop-dong",
+    contractId: selectedRoom.contractId,
+    roomId: selectedRoom.id,
+    tenantId: selectedRoom.tenantId,
 
     month: Number(formData.month),
     year: Number(formData.year),
