@@ -1,9 +1,13 @@
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { INVOICE_STATUS, getPaymentButtonLabel } from "../utils/invoiceStatus";
+import { useNavigate } from "react-router-dom";
+
 import InvoiceStatusBadge from "./InvoiceStatusBadge";
 import "./InvoiceCard.css";
 
 const InvoiceCard = ({ invoice }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="col-12 col-md-6 ">
       <div className="card invoice-card border-0 shadow-sm rounded-4 h-100">
@@ -34,7 +38,12 @@ const InvoiceCard = ({ invoice }) => {
           </div>
 
           <div className="d-flex justify-content-end gap-2">
-            <button className="btn btn-light fw-bold">Xem chi tiết</button>
+            <button
+              className="btn btn-light fw-bold"
+              onClick={() => navigate(`/invoices/${invoice.id}`)}
+            >
+              Xem chi tiết
+            </button>
 
             {invoice.status !== INVOICE_STATUS.PAID && (
               <button className="btn confirm-paid-btn fw-bold">

@@ -11,6 +11,7 @@ const UtilityReadingSection = ({
   errors,
   onChange,
   getInputClass,
+  readOnly = false,
 }) => {
   return (
     <>
@@ -25,10 +26,15 @@ const UtilityReadingSection = ({
             <label className="form-label">{field.label}</label>
             <input
               type="number"
-              className={getInputClass(field.name)}
+              className={
+                getInputClass
+                  ? getInputClass(field.name)
+                  : "form-control form-control-custom"
+              }
               name={field.name}
               value={formData[field.name]}
               onChange={onChange}
+              readOnly={readOnly}
             />
 
             {errors[field.name] && (

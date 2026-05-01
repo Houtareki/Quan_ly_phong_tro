@@ -20,6 +20,18 @@ export const getInvoices = async () => {
   }));
 };
 
+export const getInvoiceById = async (invoiceId) => {
+  const response = await fetch(`${API_URL}/invoices/${invoiceId}`);
+
+  if (!response.ok) {
+    throw new Error("Không thể lấy chi tiết hóa đơn");
+  }
+
+  const body = await response.json();
+
+  return body.data;
+};
+
 export const getActiveContracts = async () => {
   const response = await fetch(`${API_URL}/contracts/active`);
 

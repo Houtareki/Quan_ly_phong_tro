@@ -4,6 +4,7 @@ const ServiceFeeSelector = ({
   serviceOptions,
   selectedServices,
   onServiceChange,
+  readOnly = false,
 }) => {
   return (
     <>
@@ -21,6 +22,7 @@ const ServiceFeeSelector = ({
               id={service.id}
               checked={selectedServices.includes(service.id)}
               onChange={() => onServiceChange(service.id)}
+              readOnly={readOnly}
             />
 
             <label className="form-check-label" htmlFor={service.id}>
