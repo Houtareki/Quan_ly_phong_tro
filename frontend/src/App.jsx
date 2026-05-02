@@ -3,11 +3,13 @@ import "./App.css";
 import InvoiceListPage from "./pages/invoices/InvoiceListPage";
 import CreateInvoicePage from "./pages/invoices/CreateInvoicePage";
 import InvoiceDetailPage from "./pages/invoices/InvoiceDetailPage";
+import ReportsPage from "./pages/reports/ReportsPage";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/invoices" replace />} />
+      <Route path="/dashboard" element={<ReportsPage />} />
       <Route path="/invoices" element={<InvoiceListPage />} />
       <Route path="/invoices/create" element={<CreateInvoicePage />} />
       <Route path="/invoices/:invoiceId" element={<InvoiceDetailPage />} />

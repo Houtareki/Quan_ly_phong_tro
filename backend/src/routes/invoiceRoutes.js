@@ -6,12 +6,14 @@ import {
   addPayment,
   deleteInvoice,
 } from "../controllers/invoiceController.js";
+import { createPaymentRequest } from "../controllers/paymentTransactionController.js";
 
 const router = express.Router();
 
 router.get("/", getInvoices);
 router.get("/:id", getInvoiceById);
 router.post("/", createInvoice);
+router.post("/:id/payment-requests", createPaymentRequest);
 router.post("/:id/payment", addPayment);
 router.delete("/:id", deleteInvoice);
 

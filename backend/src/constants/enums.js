@@ -42,3 +42,9 @@ export const ISSUE_TYPE = {
   SECURITY: "SECURITY",
   OTHER: "OTHER",
 };
+
+export const PAYMENT_STATUS = {
+  PENDING: "PENDING",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+};

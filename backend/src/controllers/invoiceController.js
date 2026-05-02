@@ -25,17 +25,32 @@ const calculateTotalAmount = ({
   return roomPrice + electricCost + waterCost + serviceCost;
 };
 
-const getInvoiceStatus = (invoice) => {
-  const totalAmount = invoice.paymentHistory.reduce(
+const getPaidAmount = (invoice) =>
+  (invoice.paymentHistory || []).reduce(
     (total, payment) => total + payment.paidAmount,
     0,
   );
 
-  if (totalAmount <= 0) {
+const formatInvoiceResponse = (invoice) => {
+  const plainInvoice = invoice.toObject ? invoice.toObject() : invoice;
+  const paidAmount = getPaidAmount(plainInvoice);
+  const remainingAmount = Math.max(plainInvoice.totalAmount - paidAmount, 0);
+
+  return {
+    ...plainInvoice,
+    paidAmount,
+    remainingAmount,
+  };
+};
+
+const getInvoiceStatus = (invoice) => {
+  const paidAmount = getPaidAmount(invoice);
+
+  if (paidAmount <= 0) {
     return INVOICE_STATUS.UNPAID;
   }
 
-  if (totalAmount < invoice.totalAmount) {
+  if (paidAmount < invoice.totalAmount) {
     return INVOICE_STATUS.PARTIALLY_PAID;
   }
 
@@ -58,10 +73,14 @@ export const getInvoices = async (req, res) => {
     const invoices = await Invoice.find(filter)
       .populate("roomId", "roomCode roomType")
       .populate("tenantId", "fullname phone")
-      .populate("contractId", "startDate endDate status")
-      .sort({ year: -1, month: -1, createdAt: -1 });
+      .populate("contractId", "startDate endDate status");
 
-    res.status(200).json({ message: "Lấy hóa đơn thành công", data: invoices });
+    const formattedInvoices = invoices.map(formatInvoiceResponse);
+
+    res.status(200).json({
+      message: "Lấy hóa đơn thành công",
+      data: formattedInvoices,
+    });
   } catch (error) {
     res
       .status(500)
@@ -82,9 +101,10 @@ export const getInvoiceById = async (req, res) => {
       return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
     }
 
-    res
-      .status(200)
-      .json({ message: "Lấy thông tin hóa đơn thành công", data: invoice });
+    res.status(200).json({
+      message: "Lấy thông tin hóa đơn thành công",
+      data: formatInvoiceResponse(invoice),
+    });
   } catch (error) {
     res
       .status(500)
@@ -100,8 +120,9 @@ export const createInvoice = async (req, res) => {
       tenantId,
       month,
       year,
+      dueDate,
       roomPrice,
-      utilityReading,
+      utilityReading = {},
       serviceFees = [],
     } = req.body;
 
@@ -136,6 +157,7 @@ export const createInvoice = async (req, res) => {
       tenantId,
       month,
       year,
+      dueDate,
       roomPrice,
       utilityReading,
       serviceFees: normalizedServiceFees,
@@ -143,6 +165,12 @@ export const createInvoice = async (req, res) => {
       status: INVOICE_STATUS.UNPAID,
       paymentHistory: [],
     });
+
+    if (!dueDate) {
+      return res.status(400).json({
+        message: "Vui lòng nhập hạn thanh toán",
+      });
+    }
 
     res
       .status(201)
@@ -191,9 +219,10 @@ export const addPayment = async (req, res) => {
 
     await invoice.save();
 
-    res
-      .status(200)
-      .json({ message: "Cập nhật thanh toán thành công", data: invoice });
+    res.status(200).json({
+      message: "Cập nhật thanh toán thành công",
+      data: formatInvoiceResponse(invoice),
+    });
   } catch (error) {
     res.status(500).json({
       message: "Lỗi cập nhật thanh toán",

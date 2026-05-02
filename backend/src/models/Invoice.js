@@ -79,6 +79,10 @@ const invoiceSchema = new mongoose.Schema(
       required: true,
       min: 2000,
     },
+    dueDate: {
+      type: Date,
+      required: true,
+    },
     roomPrice: {
       type: Number,
       required: true,
