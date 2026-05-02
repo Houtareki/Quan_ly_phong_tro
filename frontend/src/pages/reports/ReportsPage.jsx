@@ -13,26 +13,85 @@ import {
 } from "recharts";
 
 import AppLayout from "../../components/layout/AppLayout";
-import { getDashboardReport } from "../invoices/services/reportApi";
 import { formatCurrency } from "../../utils/formatCurrency";
+import { getDashboardReport } from "../invoices/services/reportApi";
 import "./ReportsPage.css";
 
-const ReportsPage = () => {
+const getCurrentPeriod = () => {
   const now = new Date();
-  const [month, setMonth] = useState(now.getMonth() + 1);
-  const [year, setYear] = useState(now.getFullYear());
+
+  return {
+    month: now.getMonth() + 1,
+    year: now.getFullYear(),
+  };
+};
+
+const ReportsPage = () => {
+  const currentPeriod = getCurrentPeriod();
+  const [month, setMonth] = useState(currentPeriod.month);
+  const [year, setYear] = useState(currentPeriod.year);
   const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    getDashboardReport({ month, year })
-      .then(setReport)
-      .catch((error) => console.error(error));
+    const fetchReport = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const data = await getDashboardReport({ month, year });
+        setReport(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReport();
   }, [month, year]);
+
+  const goToPreviousMonth = () => {
+    if (month === 1) {
+      setMonth(12);
+      setYear((currentYear) => currentYear - 1);
+      return;
+    }
+
+    setMonth((currentMonth) => currentMonth - 1);
+  };
+
+  const goToNextMonth = () => {
+    if (month === 12) {
+      setMonth(1);
+      setYear((currentYear) => currentYear + 1);
+      return;
+    }
+
+    setMonth((currentMonth) => currentMonth + 1);
+  };
+
+  if (loading) {
+    return (
+      <AppLayout>
+        <div className="text-muted">Đang tải thống kê...</div>
+      </AppLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AppLayout>
+        <div className="alert alert-danger">{error}</div>
+      </AppLayout>
+    );
+  }
 
   if (!report) {
     return (
       <AppLayout>
-        <div className="text-muted">Đang tải thống kê...</div>
+        <div className="text-muted">Không có dữ liệu thống kê.</div>
       </AppLayout>
     );
   }
@@ -59,14 +118,21 @@ const ReportsPage = () => {
     <AppLayout>
       <div className="reports-page">
         <div className="reports-title-row">
-          <h4 className="fw-bold mb-0">Thống kê</h4>
+          <div>
+            <h4 className="fw-bold mb-1">Thống kê</h4>
+            <p className="reports-subtitle mb-0">
+              Tổng quan doanh thu, hóa đơn và tình trạng phòng trọ
+            </p>
+          </div>
           <i className="bi bi-grid fs-3 text-muted"></i>
         </div>
 
         <section className="report-hero">
           <button
+            type="button"
             className="month-btn"
-            onClick={() => setMonth((m) => (m === 1 ? 12 : m - 1))}
+            onClick={goToPreviousMonth}
+            aria-label="Tháng trước"
           >
             <i className="bi bi-chevron-left"></i>
           </button>
@@ -82,66 +148,56 @@ const ReportsPage = () => {
           </div>
 
           <button
+            type="button"
             className="month-btn"
-            onClick={() => setMonth((m) => (m === 12 ? 1 : m + 1))}
+            onClick={goToNextMonth}
+            aria-label="Tháng sau"
           >
             <i className="bi bi-chevron-right"></i>
           </button>
         </section>
 
-        <div className="row g-3 mt-1">
-          <div className="col-6">
-            <div className="report-card metric-card">
-              <div className="metric-icon solid"></div>
-              <div className="metric-number">
-                {report.roomSummary.totalRooms}
-              </div>
-              <div className="metric-label">Tổng phòng</div>
+        <div className="report-summary-grid mt-3">
+          <div className="report-card metric-card">
+            <div className="metric-icon solid">
+              <i className="bi bi-house-door-fill"></i>
             </div>
+            <div className="metric-number">{report.roomSummary.totalRooms}</div>
+            <div className="metric-label">Tổng phòng</div>
           </div>
 
-          <div className="col-6">
-            <div className="report-card metric-card">
-              <div className="metric-icon pale">
-                <i className="bi bi-people-fill"></i>
-              </div>
-              <div className="metric-number">
-                {report.roomSummary.rentedRooms}
-              </div>
-              <div className="metric-label">Đang thuê</div>
+          <div className="report-card metric-card">
+            <div className="metric-icon pale">
+              <i className="bi bi-people-fill"></i>
             </div>
+            <div className="metric-number">{report.roomSummary.rentedRooms}</div>
+            <div className="metric-label">Đang thuê</div>
           </div>
 
-          <div className="col-6">
-            <div className="report-card metric-card">
-              <div className="metric-icon warning">
-                <i className="bi bi-tools"></i>
-              </div>
-              <div className="metric-number">
-                {report.roomSummary.maintenanceRooms}
-              </div>
-              <div className="metric-label">Bảo trì</div>
+          <div className="report-card metric-card">
+            <div className="metric-icon warning">
+              <i className="bi bi-tools"></i>
             </div>
+            <div className="metric-number">
+              {report.roomSummary.maintenanceRooms}
+            </div>
+            <div className="metric-label">Bảo trì</div>
           </div>
 
-          <div className="col-6">
-            <div className="report-card metric-card">
-              <div className="metric-icon empty">
-                <i className="bi bi-door-open"></i>
-              </div>
-              <div className="metric-number">
-                {report.roomSummary.emptyRooms}
-              </div>
-              <div className="metric-label">Phòng trống</div>
+          <div className="report-card metric-card">
+            <div className="metric-icon empty">
+              <i className="bi bi-door-open"></i>
             </div>
+            <div className="metric-number">{report.roomSummary.emptyRooms}</div>
+            <div className="metric-label">Phòng trống</div>
           </div>
         </div>
 
         <div className="report-main-grid mt-3">
-          <section className="report-card mt-3">
+          <section className="report-card">
             <h6 className="report-card-title">Doanh thu 6 tháng gần nhất</h6>
             <div className="chart-box large">
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={report.revenueByMonth}>
                   <defs>
                     <linearGradient
@@ -175,94 +231,112 @@ const ReportsPage = () => {
             </div>
           </section>
 
-          <section className="report-card mt-3">
+          <section className="report-card">
             <h6 className="report-card-title">Tình trạng phòng</h6>
-            <ResponsiveContainer width="100%" height={280}>
-              <PieChart>
-                <Pie
-                  data={roomChartData}
-                  dataKey="value"
-                  innerRadius={78}
-                  outerRadius={108}
-                  paddingAngle={2}
-                >
-                  {roomChartData.map((item) => (
-                    <Cell key={item.name} fill={item.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-              <Tooltip />
-            </ResponsiveContainer>
 
-            <div className="room-pie-center">
-              <strong>{report.roomSummary.totalRooms}</strong>
-              <span>phòng</span>
+            <div className="room-pie-wrap">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={roomChartData}
+                    dataKey="value"
+                    innerRadius={78}
+                    outerRadius={108}
+                    paddingAngle={2}
+                  >
+                    {roomChartData.map((item) => (
+                      <Cell key={item.name} fill={item.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+
+              <div className="room-pie-center">
+                <strong>{report.roomSummary.totalRooms}</strong>
+                <span>phòng</span>
+              </div>
+            </div>
+
+            <div className="room-status-legend">
+              {roomChartData.map((item) => (
+                <div className="legend-item" key={item.name}>
+                  <span
+                    className="legend-dot"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span>{item.name}</span>
+                  <strong>{item.value}</strong>
+                </div>
+              ))}
             </div>
           </section>
         </div>
 
-        <section className="report-card mt-3">
-          <h6 className="report-card-title">Thu Chi tháng này</h6>
-          <div className="finance-grid">
-            <div>
-              <span>Thu</span>
-              <strong className="text-success">
-                {formatCurrency(report.financialSummary.totalIncome)}
-              </strong>
+        <div className="report-bottom-grid mt-3">
+          <section className="report-card">
+            <h6 className="report-card-title">Thu chi tháng này</h6>
+            <div className="finance-grid">
+              <div>
+                <span>Thu</span>
+                <strong className="text-success">
+                  {formatCurrency(report.financialSummary.totalIncome)}
+                </strong>
+              </div>
+              <div>
+                <span>Chi</span>
+                <strong className="text-danger">
+                  {formatCurrency(report.financialSummary.totalExpense)}
+                </strong>
+              </div>
+              <div>
+                <span>Lợi nhuận</span>
+                <strong className="text-success">
+                  {formatCurrency(report.financialSummary.profit)}
+                </strong>
+              </div>
             </div>
-            <div>
-              <span>Chi</span>
-              <strong className="text-danger">
-                {formatCurrency(report.financialSummary.totalExpense)}
-              </strong>
-            </div>
-            <div>
-              <span>Lợi nhuận</span>
-              <strong className="text-success">
-                {formatCurrency(report.financialSummary.profit)}
-              </strong>
-            </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="report-card mt-3">
-          <h6 className="report-card-title">Hóa đơn</h6>
-          <div className="invoice-grid">
-            <div>
-              <strong className="text-success">
-                {report.invoiceSummary.paidCount}
-              </strong>
-              <span>Đã thanh toán</span>
+          <section className="report-card">
+            <h6 className="report-card-title">Hóa đơn</h6>
+            <div className="invoice-grid">
+              <div>
+                <strong className="text-success">
+                  {report.invoiceSummary.paidCount}
+                </strong>
+                <span>Đã thanh toán</span>
+              </div>
+              <div>
+                <strong className="text-danger">
+                  {report.invoiceSummary.unpaidCount}
+                </strong>
+                <span>Chưa thanh toán</span>
+              </div>
             </div>
-            <div>
-              <strong className="text-danger">
-                {report.invoiceSummary.unpaidCount}
-              </strong>
-              <span>Chưa thanh toán</span>
+            <div className="debt-box">
+              <span>
+                <i className="bi bi-wallet2"></i> Tiền cần thu:
+              </span>
+              <strong>{formatCurrency(report.invoiceSummary.totalDebt)}</strong>
             </div>
-          </div>
-          <div className="debt-box">
-            <span>
-              <i className="bi bi-wallet2"></i> Tiền cần thu:
-            </span>
-            <strong>{formatCurrency(report.invoiceSummary.totalDebt)}</strong>
-          </div>
-        </section>
+          </section>
 
-        <section className="report-card mt-3">
-          <h6 className="report-card-title">Tỷ lệ lấp đầy</h6>
-          <div className="progress occupancy-progress">
-            <div
-              className="progress-bar"
-              style={{ width: `${report.roomSummary.occupancyRate}%` }}
-            />
-          </div>
-          <div className="mt-2 text-muted">
-            {report.roomSummary.occupancyRate}% (
-            {report.roomSummary.rentedRooms}/{report.roomSummary.totalRooms}{" "}
-            phòng)
-          </div>
-        </section>
+          <section className="report-card">
+            <h6 className="report-card-title">Tỷ lệ lấp đầy</h6>
+            <div className="progress occupancy-progress">
+              <div
+                className="progress-bar"
+                style={{ width: `${report.roomSummary.occupancyRate}%` }}
+              />
+            </div>
+            <div className="mt-2 text-muted">
+              {report.roomSummary.occupancyRate}% (
+              {report.roomSummary.rentedRooms}/{report.roomSummary.totalRooms}{" "}
+              phòng)
+            </div>
+          </section>
+        </div>
 
         <button className="btn export-btn w-100 mt-3 mb-4">
           <i className="bi bi-download me-2"></i>

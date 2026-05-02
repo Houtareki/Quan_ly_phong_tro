@@ -1,6 +1,6 @@
 .reports-page {
   width: 100%;
-  max-width: 1080px;
+  max-width: 1280px;
   margin: 0 auto;
 }
 
@@ -8,15 +8,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   margin-bottom: 18px;
 }
 
+.reports-subtitle {
+  color: #6b7280;
+}
+
 .report-hero {
-  min-height: 140px;
+  min-height: 150px;
   background: #0f8f68;
   color: white;
   border-radius: 12px;
-  padding: 20px 18px;
+  padding: 22px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -24,12 +29,19 @@
 }
 
 .month-btn {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border: none;
-  background: transparent;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
   color: white;
   font-size: 20px;
+  display: grid;
+  place-items: center;
+}
+
+.month-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .report-month {
@@ -40,7 +52,7 @@
 
 .report-revenue {
   text-align: center;
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 800;
   line-height: 1.1;
 }
@@ -59,8 +71,27 @@
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
+.report-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.report-main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.report-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 16px;
+}
+
 .metric-card {
-  height: 126px;
+  min-height: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -68,8 +99,8 @@
 }
 
 .metric-icon {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   border-radius: 999px;
   display: grid;
   place-items: center;
@@ -78,11 +109,22 @@
 
 .metric-icon.solid {
   background: #0f8f68;
+  color: white;
 }
 
 .metric-icon.pale {
   background: #eaf7ef;
   color: #2f9e44;
+}
+
+.metric-icon.warning {
+  background: #fff7e6;
+  color: #f59e0b;
+}
+
+.metric-icon.empty {
+  background: #eef2f7;
+  color: #64748b;
 }
 
 .metric-number {
@@ -102,6 +144,64 @@
 
 .chart-box {
   height: 220px;
+}
+
+.chart-box.large {
+  height: 320px;
+}
+
+.room-pie-wrap {
+  position: relative;
+  height: 280px;
+}
+
+.room-pie-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.room-pie-center strong {
+  display: block;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.room-pie-center span {
+  display: block;
+  color: #6b7280;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.room-status-legend {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.legend-item {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.legend-item strong {
+  color: #111827;
 }
 
 .finance-grid,
@@ -162,4 +262,34 @@
 .export-btn:hover {
   background: #0c7958;
   color: white;
+}
+
+@media (max-width: 992px) {
+  .report-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .report-main-grid,
+  .report-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .report-hero {
+    padding: 18px 14px;
+  }
+
+  .report-revenue {
+    font-size: 24px;
+  }
+
+  .chart-box.large {
+    height: 240px;
+  }
+
+  .finance-grid {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
 }
