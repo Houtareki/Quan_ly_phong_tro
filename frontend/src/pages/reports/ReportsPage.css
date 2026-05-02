@@ -242,13 +242,20 @@
   gap: 12px;
 }
 
-.occupancy-progress {
+.occupancy-bar {
+  width: 100%;
   height: 12px;
-  background: #e5eee9;
+  background-color: #e5eee9;
+  border-radius: 999px;
+  overflow: hidden;
 }
 
-.occupancy-progress .progress-bar {
-  background: #0f8f68;
+.occupancy-bar-fill {
+  height: 100%;
+  background-color: #0f8f68;
+  border-radius: 999px;
+  display: block;
+  transition: none;
 }
 
 .export-btn {
@@ -262,6 +269,11 @@
 .export-btn:hover {
   background: #0c7958;
   color: white;
+}
+
+.report-export-area {
+  background: #f6fbf8;
+  padding: 0;
 }
 
 @media (max-width: 992px) {
