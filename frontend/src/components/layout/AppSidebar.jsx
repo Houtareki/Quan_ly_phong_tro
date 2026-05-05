@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import "./AppSidebar.css";
+import UserAppLayout from "./UserAppLayout";
 
 const menuItems = [
   {
@@ -27,6 +28,11 @@ const menuItems = [
     label: "Thu/chi",
     icon: "bi bi-wallet2",
     path: "/transactions",
+  },
+   {
+    label: "Trang người dùng",
+    icon: "bi bi-person-circle",
+    path: "/user/my-room",
   },
 ];
 
