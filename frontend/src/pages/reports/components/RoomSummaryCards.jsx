@@ -22,7 +22,7 @@ const RoomSummaryCards = ({ roomSummary }) => {
       label: "Phòng trống",
       value: roomSummary.emptyRooms,
       icon: "bi bi-door-open",
-      className: "empty",
+      className: "vacant",
     },
   ];
 
