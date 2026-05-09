@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { sendSupport } from "../reports/services/userService";
+import { sendSupport } from "./services/userService";
 import "./Style.css";
 
 function Support() {

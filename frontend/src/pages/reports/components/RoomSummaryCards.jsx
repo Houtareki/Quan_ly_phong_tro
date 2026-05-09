@@ -29,7 +29,7 @@ const RoomSummaryCards = ({ roomSummary }) => {
   return (
     <div className="report-summary-grid mt-3">
       {cards.map((card) => (
-        <div className="report-card metric-card">
+        <div className="report-card metric-card" key={card.label}>
           <div className={`metric-icon ${card.className}`}>
             <i className={card.icon}></i>
           </div>

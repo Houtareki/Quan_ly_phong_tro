@@ -9,13 +9,16 @@ import {
 } from "recharts";
 import { formatCurrency } from "../../../utils/formatCurrency";
 
-const RevenueChartCard = ({ data = [] }) => {
+const RevenueChartCard = ({ data }) => {
   return (
     <section className="report-card">
       <h6 className="report-card-title">Doanh thu 6 tháng gần nhất</h6>
       <div className="chart-box large">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
+        <ResponsiveContainer width="100%" height={340}>
+          <AreaChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 20, bottom: 10 }}
+          >
             <defs>
               <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#0f8f68" stopOpacity={0.25} />
@@ -23,8 +26,18 @@ const RevenueChartCard = ({ data = [] }) => {
               </linearGradient>
             </defs>
             <CartesianGrid stroke="#eef2f0" vertical={false} />
-            <XAxis dataKey="label" tickLine={false} axisLine={false} />
-            <YAxis tickLine={false} axisLine={false} />
+            <XAxis
+              dataKey="label"
+              tickLine={false}
+              axisLine={false}
+              tick={{ dy: 10 }}
+            />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => value.toLocaleString()}
+              width={80}
+            />
             <Tooltip formatter={(value) => formatCurrency(value)} />
             <Area
               type="monotone"

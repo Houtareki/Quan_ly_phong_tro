@@ -1,15 +1,14 @@
-const express = require("express");
-const router = express.Router();
-const {
-  getMyRoom,
+import express from "express";
+import {
+  createSupportRequest,
   getMyInvoices,
-  createSupportRequest
-} = require("../controllers/user.controller");
+  getMyRoom,
+} from "../controllers/userController.js";
 
-//const requireLogin = require("../middleware/requireLogin");
+const router = express.Router();
 
-router.get("/my-room", requireLogin, getMyRoom);
-router.get("/my-invoices", requireLogin, getMyInvoices);
-router.post("/support", requireLogin, createSupportRequest);
+router.get("/my-room", getMyRoom);
+router.get("/my-invoices", getMyInvoices);
+router.post("/support", createSupportRequest);
 
-module.exports = router;
+export default router;

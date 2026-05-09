@@ -14,6 +14,7 @@ const calculateTotalAmount = ({
   const newWater = utilityReading.newWater || 0;
   const waterPrice = utilityReading.waterPrice || 0;
 
+  // Chỉ số tiện ích được tính dựa trên hiệu giữa chỉ số mới và chỉ số cũ.
   const electricCost = (newElectric - oldElectric) * electricPrice;
   const waterCost = (newWater - oldWater) * waterPrice;
 
@@ -43,6 +44,7 @@ const formatInvoiceResponse = (invoice) => {
   };
 };
 
+// Trạng thái hóa đơn được xác định từ lịch sử thanh toán đã xác nhận, không tính các giao dịch đang chờ xử lý.
 const getInvoiceStatus = (invoice) => {
   const paidAmount = getPaidAmount(invoice);
 
@@ -202,6 +204,7 @@ export const addPayment = async (req, res) => {
       0,
     );
 
+    // Ngăn chặn thanh toán thừa để số dư hóa đơn không bị âm.
     if (currentTotalPaid + paidAmount > invoice.totalAmount) {
       return res.status(400).json({
         message: "Số tiền thanh toán vượt quá tổng số tiền của hóa đơn",

@@ -69,6 +69,7 @@
   border-radius: 12px;
   padding: 16px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  min-width: 0;
 }
 
 .report-summary-grid {
@@ -144,15 +145,19 @@
 
 .chart-box {
   height: 220px;
+  min-width: 0;
+  width: 100%;
 }
 
 .chart-box.large {
-  height: 320px;
+  height: 340px;
 }
 
 .room-pie-wrap {
   position: relative;
   height: 280px;
+  min-width: 0;
+  width: 100%;
 }
 
 .room-pie-center {

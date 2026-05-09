@@ -127,6 +127,8 @@ export const createPaymentRequest = async (req, res) => {
       });
     }
 
+    // Các yêu cầu thanh toán đang chờ sẽ không được tính
+    // là đã thanh toán cho đến khi quản trị viên xác nhận.
     const pendingTransactions = await PaymentTransaction.find({
       invoiceId: invoice._id,
       status: PAYMENT_STATUS.PENDING,
@@ -146,6 +148,9 @@ export const createPaymentRequest = async (req, res) => {
     const paymentCode = generatePaymentCode(invoice);
     const transferContent = paymentCode;
     const bankConfig = getBankConfig();
+
+    // VietQR được tạo từ cấu hình ngân hàng tĩnh để chạy demo
+    // không thực hiện đối soát ngân hàng thực tế
     const qrUrl =
       paymentMethod === PAYMENT_METHOD.BANK_TRANSFER
         ? buildQrUrl({
@@ -277,6 +282,8 @@ export const confirmPaymentTransaction = async (req, res) => {
       });
     }
 
+    // Giao dịch được xác nhận khi
+    // tiền chính thức được ghi nhận vào lịch sử hóa đơn
     invoice.paymentHistory.push({
       paidAmount: transaction.amount,
       paymentMethod: transaction.paymentMethod,

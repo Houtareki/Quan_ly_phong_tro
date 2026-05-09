@@ -17,6 +17,7 @@ const getPaidAmount = (invoice) =>
 const getRemainingAmount = (invoice) =>
   Math.max(invoice.totalAmount - getPaidAmount(invoice), 0);
 
+// API dùng số 1-12 cho tháng, còn JavaScript dùng 0-11.
 const getMonthRange = (month, year) => {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 1);
@@ -67,6 +68,7 @@ export const getDashboardReport = async (req, res) => {
     const invoicesInMonth = await Invoice.find({ month, year });
     const allInvoices = await Invoice.find();
 
+    // Doanh thu dựa trên ngày trả thực tế, chứ không phải hóa đơn trong tháng
     const revenueInMonth = calculateRevenueInRange(
       allInvoices,
       startDate,
@@ -89,6 +91,7 @@ export const getDashboardReport = async (req, res) => {
       status: ROOM_STATUS.MAINTENANCE,
     });
 
+    // Phòng trọ được tính là thuê khi xuất hiện ít nhất trong 1 hợp đồng đang hoạt động
     const activeContracts = await Contract.find({
       status: CONTRACT_STATUS.ACTIVE,
     }).distinct("roomId");
@@ -132,6 +135,7 @@ export const getDashboardReport = async (req, res) => {
     );
 
     const totalIncome = revenueInMonth;
+    // Tạm thời chưa có db và cài đặt
     const totalExpense = 0;
     const profit = totalIncome - totalExpense;
 

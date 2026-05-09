@@ -42,3 +42,32 @@
   font-size: 40px;
   margin-bottom: 10px;
 }
+
+.user-info-list {
+  display: grid;
+  gap: 10px;
+}
+
+.user-info-list p {
+  margin: 0;
+}
+
+.invoice-user-list {
+  display: grid;
+  gap: 12px;
+}
+
+.invoice-user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #dce7e1;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.invoice-user-item p {
+  color: #6b7280;
+  margin: 4px 0 0;
+}

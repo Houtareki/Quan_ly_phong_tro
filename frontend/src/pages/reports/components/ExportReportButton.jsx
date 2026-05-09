@@ -38,7 +38,6 @@ const ExportReportButton = ({ targetRef, month, year }) => {
       const imageWidth = canvas.width * ratio;
       const imageHeight = canvas.height * ratio;
 
-      // Căn giữa trang
       const imageX = (pageWidth - imageWidth) / 2;
       const imageY = (pageHeight - imageHeight) / 2;
 
