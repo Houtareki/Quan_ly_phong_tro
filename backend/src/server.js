@@ -12,6 +12,8 @@ import roomRoutes from "./routes/roomRoutes.js";
 import contractRoutes from "./routes/contractRoutes.js";
 import paymentTransactionRoutes from "./routes/paymentTransactionRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import authRoutes from "./routes/authRoutes.js";       // ← thêm
+import adminRoutes from "./routes/adminRoutes.js";     // ← thêm
 
 dotenv.config();
 
@@ -29,6 +31,8 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/contracts", contractRoutes);
 app.use("/api/payment-transactions", paymentTransactionRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/auth", authRoutes);     // ← thêm
+app.use("/api/admin", adminRoutes);   // ← thêm
 
 const PORT = process.env.PORT || 5000;
 
