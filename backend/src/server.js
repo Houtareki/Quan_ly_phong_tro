@@ -7,12 +7,14 @@ import "./models/Room.js";
 import "./models/Contract.js";
 import "./models/Invoice.js";
 import "./models/PaymentTransaction.js";
+import "./models/Transaction.js";
 import invoiceRoutes from "./routes/invoiceRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
 import contractRoutes from "./routes/contractRoutes.js";
 import paymentTransactionRoutes from "./routes/paymentTransactionRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 
 dotenv.config();
 
@@ -31,6 +33,7 @@ app.use("/api/contracts", contractRoutes);
 app.use("/api/payment-transactions", paymentTransactionRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/transactions", transactionRoutes);
 
 const PORT = process.env.PORT || 5000;
 
