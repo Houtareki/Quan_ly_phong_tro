@@ -148,7 +148,7 @@ const TransactionListPage = () => {
                             className={`bi ${trans.type === "INCOME" ? "bi-arrow-down-left" : "bi-arrow-up-right"}`}
                           ></i>
                         </div>
-                        <h6 className="mb-1 fw-bold">{tx.category}</h6>
+                        <h6 className="mb-1 fw-bold">{trans.category}</h6>
                         <small className="text-muted">
                           {formatDate(trans.date)}{" "}
                           {trans.roomId
@@ -162,13 +162,13 @@ const TransactionListPage = () => {
                         )}
                         <div
                           className={
-                            tx.type === "INCOME"
+                            trans.type === "INCOME"
                               ? "amount-income"
                               : "amount-expense"
                           }
                         >
-                          {tx.type === "INCOME" ? "+" : "-"}
-                          {formatCurrency(tx.amount)}
+                          {trans.type === "INCOME" ? "+" : "-"}
+                          {formatCurrency(trans.amount)}
                         </div>
                       </div>
                       <div
