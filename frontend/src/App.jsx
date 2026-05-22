@@ -6,6 +6,7 @@ import InvoiceDetailPage from "./pages/invoices/InvoiceDetailPage";
 import ReportsPage from "./pages/reports/ReportsPage";
 import TransactionListPage from "./pages/transactions/TransactionListPage";
 import CreateTransactionPage from "./pages/transactions/CreateTransactionPage";
+import NotFoundPage from "./pages/notFound/NotFoundPage";
 
 import UserAppLayout from "./components/layout/UserAppLayout";
 import MyRoom from "./pages/users/MyRoom";
@@ -15,7 +16,7 @@ import Support from "./pages/users/Support";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/invoices" replace />} />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/dashboard" element={<ReportsPage />} />
       <Route path="/invoices" element={<InvoiceListPage />} />
       <Route path="/invoices/create" element={<CreateInvoicePage />} />
@@ -27,7 +28,7 @@ function App() {
         <Route path="my-invoices" element={<MyInvoices />} />
         <Route path="support" element={<Support />} />
       </Route>
-      <Route path="*" element={<h2>404 Not Found</h2>} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
