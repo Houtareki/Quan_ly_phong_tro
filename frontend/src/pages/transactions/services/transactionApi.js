@@ -8,11 +8,11 @@ export const createTransaction = async (transaction) => {
   });
 
   if (!response.ok) {
-    throw new Error(body.message || "Không thể tạo giao dịch");
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Không thể tạo giao dịch");
   }
 
-  const body = await response.json();
-  return body;
+  return await response.json();
 };
 
 export const getTransactions = async (type = "ALL") => {
@@ -34,5 +34,5 @@ export const getRoomsList = async () => {
   }
 
   const body = await response.json();
-  return body;
+  return body.data;
 };
