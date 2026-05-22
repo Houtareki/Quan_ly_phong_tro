@@ -15,8 +15,20 @@ export const createTransaction = async (transaction) => {
   return await response.json();
 };
 
-export const getTransactions = async (type = "ALL") => {
-  const response = await fetch(`${API_URL}/transactions?type=${type}`);
+export const getTransactions = async (
+  type = "ALL",
+  startDate = "",
+  endDate = "",
+) => {
+  let url = `${API_URL}/transactions?type=${type}`;
+  if (startDate) {
+    url += `&startDate=${startDate}`;
+  }
+  if (endDate) {
+    url += `&endDate=${endDate}`;
+  }
+
+  const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error(body.message || "Không thể lấy danh sách giao dịch");

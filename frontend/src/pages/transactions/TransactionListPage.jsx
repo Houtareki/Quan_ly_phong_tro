@@ -18,15 +18,24 @@ const TransactionListPage = () => {
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState("ALL");
 
-  const fetchTransactions = async (type) => {
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    return new Date(date.getFullYear(), date.getMonth(), 1)
+      .toISOString()
+      .split("T")[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split("T")[0];
+  });
+
+  const fetchTransactions = async (type, startDate, endDate) => {
     setLoading(true);
     try {
-      const result = await getTransactions(type);
+      const result = await getTransactions(type, startDate, endDate);
 
       setTransactions(result.data);
-      if (type === "ALL") {
-        setSummary(result.summary);
-      }
+
+      setSummary(result.summary);
       setError(null);
     } catch (error) {
       setError(error.message || "Không thể lấy danh sách giao dịch");
@@ -36,7 +45,7 @@ const TransactionListPage = () => {
   };
 
   useEffect(() => {
-    fetchTransactions(filter);
+    fetchTransactions(filter, startDate, endDate);
   }, [filter]);
 
   const formatCurrency = (amount) => {
@@ -44,6 +53,10 @@ const TransactionListPage = () => {
       style: "currency",
       currency: "VND",
     }).format(amount);
+  };
+
+  const handleSearch = () => {
+    fetchTransactions(filter, startDate, endDate);
   };
 
   const formatDate = (dateString) => {
@@ -91,32 +104,67 @@ const TransactionListPage = () => {
           </h4>
         </div>
       </div>
-      <ul className="nav nav-tabs mb-4">
-        <li className="nav-item">
+
+      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+        {/* Tab Bộ lọc Loại */}
+        <ul className="nav nav-tabs mb-4">
+          <li className="nav-item">
+            <button
+              className={`nav-link ${filter === "ALL" ? "active fw-bold text-success" : "text-muted"}`}
+              onClick={() => setFilter("ALL")}
+            >
+              Tất cả
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${filter === "INCOME" ? "active fw-bold text-success" : "text-muted"}`}
+              onClick={() => setFilter("INCOME")}
+            >
+              Thu
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${filter === "EXPENSE" ? "active fw-bold text-success" : "text-muted"}`}
+              onClick={() => setFilter("EXPENSE")}
+            >
+              Chi
+            </button>
+          </li>
+        </ul>
+
+        {/* Lịch Chọn Ngày */}
+        <div className="d-flex align-items-center gap-2 bg-light p-2 rounded-4 shadow-sm border">
+          <i className="bi bi-calendar-range text-muted ms-2"></i>
+          <div className="d-flex align-items-center gap-2">
+            <span className="text-muted small fw-bold ms-1">Từ:</span>
+            <input
+              type="date"
+              className="form-control form-control-sm border-0 bg-transparent text-dark"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          <div className="vr text-muted"></div>
+          <div className="d-flex align-items-center gap-2">
+            <span className="text-muted small fw-bold">Đến:</span>
+            <input
+              type="date"
+              className="form-control form-control-sm border-0 bg-transparent text-dark pe-2"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+
           <button
-            className={`nav-link ${filter === "ALL" ? "active fw-bold text-success" : "text-muted"}`}
-            onClick={() => setFilter("ALL")}
+            className="btn btn-success btn-sm rounded-pill px-3 ms-2 fw-bold shadow-sm"
+            onClick={handleSearch}
           >
-            Tất cả
+            <i className="bi bi-search me-1"></i> Tìm
           </button>
-        </li>
-        <li className="nav-item">
-          <button
-            className={`nav-link ${filter === "INCOME" ? "active fw-bold text-success" : "text-muted"}`}
-            onClick={() => setFilter("INCOME")}
-          >
-            Thu
-          </button>
-        </li>
-        <li className="nav-item">
-          <button
-            className={`nav-link ${filter === "EXPENSE" ? "active fw-bold text-success" : "text-muted"}`}
-            onClick={() => setFilter("EXPENSE")}
-          >
-            Chi
-          </button>
-        </li>
-      </ul>
+        </div>
+      </div>
 
       {loading ? (
         <div className="text-center py-5">

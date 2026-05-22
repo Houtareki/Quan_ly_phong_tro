@@ -25,8 +25,25 @@ export const createTransaction = async (req, res) => {
 
 export const getTransactions = async (req, res) => {
   try {
-    const { type } = req.query;
+    const { type, startDate, endDate } = req.query;
     let query = {};
+    let summaryQuery = {};
+
+    if (startDate || endDate) {
+      query.date = {};
+      summaryQuery.date = {};
+
+      if (startDate) {
+        query.date.$gte = new Date(startDate);
+        summaryQuery.date.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        query.date.$lte = end;
+        summaryQuery.date.$lte = end;
+      }
+    }
 
     if (type && type !== "ALL") {
       query.type = type;
