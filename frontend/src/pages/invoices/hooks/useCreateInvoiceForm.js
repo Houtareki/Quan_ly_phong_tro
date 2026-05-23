@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useInvoiceCalculator } from "./useInvoiceCalculator";
 import { validateForm } from "../utils/invoiceValidation";
 import { initialInvoiceFormData } from "../constants/initialInvoiceFormData";
@@ -6,6 +7,8 @@ import { buildInvoicePayload } from "../utils/buildInvoicePayload";
 import { createInvoice } from "../services/invoiceApi";
 
 export const useCreateInvoiceForm = (roomOptions, serviceOptions) => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState(initialInvoiceFormData);
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
@@ -82,6 +85,10 @@ export const useCreateInvoiceForm = (roomOptions, serviceOptions) => {
 
       setSuccessMessage("Hóa đơn đã được tạo thành công!");
       console.log("Dữ liệu hóa đơn:", payload);
+
+      setTimeout(() => {
+        navigate("/invoices");
+      }, 1500);
     } catch (error) {
       setSubmitError(error.message || "Không thể tạo hóa đơn");
     } finally {

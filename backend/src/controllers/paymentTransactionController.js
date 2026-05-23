@@ -1,5 +1,6 @@
 import Invoice from "../models/Invoice.js";
 import PaymentTransaction from "../models/PaymentTransaction.js";
+import Transaction from "../models/Transaction.js";
 import {
   INVOICE_STATUS,
   PAYMENT_METHOD,
@@ -301,6 +302,14 @@ export const confirmPaymentTransaction = async (req, res) => {
     transaction.confirmedAt = new Date();
 
     await invoice.save();
+    await Transaction.create({
+      type: "INCOME",
+      amount: transaction.amount,
+      category: "Thu tiền phòng & dịch vụ",
+      roomId: invoice.roomId,
+      date: paidAt ? new Date(paidAt) : new Date(),
+      description: `Thu tiền hóa đơn tháng ${invoice.month}/${invoice.year} (Duyệt thủ công)`,
+    });
     await transaction.save();
 
     res.status(200).json({
@@ -486,6 +495,15 @@ export const handleVNPayReturn = async (req, res) => {
 
             invoice.status = getInvoiceStatus(invoice);
             await invoice.save();
+
+            await Transaction.create({
+              type: "INCOME",
+              amount: vnp_Amount,
+              category: "Thu tiền phòng & dịch vụ",
+              roomId: invoice.roomId,
+              date: new Date(),
+              description: `Thanh toán hóa đơn tháng ${invoice.month}/${invoice.year} qua VNPay`,
+            });
           }
         }
       }

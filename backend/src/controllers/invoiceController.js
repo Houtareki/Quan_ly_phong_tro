@@ -128,6 +128,12 @@ export const createInvoice = async (req, res) => {
       serviceFees = [],
     } = req.body;
 
+    if (!dueDate) {
+      return res.status(400).json({
+        message: "Vui lòng nhập hạn thanh toán",
+      });
+    }
+
     if (utilityReading.oldElectric > utilityReading.newElectric) {
       return res.status(400).json({
         message: "Chỉ số điện mới phải lớn hơn hoặc bằng chỉ số cũ",
@@ -167,12 +173,6 @@ export const createInvoice = async (req, res) => {
       status: INVOICE_STATUS.UNPAID,
       paymentHistory: [],
     });
-
-    if (!dueDate) {
-      return res.status(400).json({
-        message: "Vui lòng nhập hạn thanh toán",
-      });
-    }
 
     res
       .status(201)

@@ -135,7 +135,6 @@ export const getDashboardReport = async (req, res) => {
     );
 
     const totalIncome = revenueInMonth;
-    // Tạm thời chưa có db và cài đặt
     const totalExpense = 0;
     const profit = totalIncome - totalExpense;
 
