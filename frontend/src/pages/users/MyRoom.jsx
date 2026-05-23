@@ -35,7 +35,7 @@ function MyRoom() {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="user-card">
+    <div className="card border-0 shadow-sm rounded-4 p-4">
       <h3>Phòng của tôi</h3>
 
       {error && <div className="alert">{error}</div>}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getMyInvoices } from "./services/userService";
 import { createVNPayUrl } from "./services/paymentApi";
 import { filterOptions } from "../invoices/utils/invoiceStatus";
+import InvoiceFilterBar from "../invoices/components/InvoiceFilterBar";
 import "./Style.css";
 
 function MyInvoices() {
@@ -67,18 +68,7 @@ function MyInvoices() {
 
   return (
     <div className="user-card">
-      <div className="tabs">
-        {filterOptions.map((item) => (
-          <button
-            className={filter === item.value ? "active" : ""}
-            key={item.value}
-            onClick={() => setFilter(item.value)}
-            type="button"
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
+      <InvoiceFilterBar filter={filter} onFilterChange={setFilter} />
 
       {error && <div className="alert">{error}</div>}
       {loading && <p>Loading...</p>}
@@ -93,7 +83,11 @@ function MyInvoices() {
       {!loading && filteredInvoices.length > 0 && (
         <div className="invoice-user-list">
           {filteredInvoices.map((invoice) => (
-            <div className="invoice-user-item" key={invoice._id}>
+            <div
+              className="invoice-user-item border-0 shadow-sm rounded-4 p-4 "
+              style={{ backgroundColor: "#fff" }}
+              key={invoice._id}
+            >
               <div>
                 <strong>Phòng {invoice.roomId?.roomCode || "N/A"}</strong>
                 <p>

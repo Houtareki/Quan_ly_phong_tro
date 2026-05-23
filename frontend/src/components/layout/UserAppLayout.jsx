@@ -1,40 +1,53 @@
 import { NavLink, Outlet } from "react-router-dom";
-import "./UserAppLayout.css";
+// Import tái sử dụng CSS của Admin
+import "./AppLayout.css";
+import "./AppSidebar.css";
+
 function UserAppLayout() {
   return (
-    <div className="user-layout d-flex">
-      {/* Sidebar */}
-      <div className="user-sidebar">
-        <h4 className="p-3">User Panel</h4>
+    <div className="container-fluid invoice-page">
+      <div className="row min-vh-100">
+        {/* Sidebar dùng chung class với Admin */}
+        <aside className="col-2 col-lg-2 app-sidebar p-3">
+          <div className="fw-bold fs-4 mb-4 sidebar-brand">Khách Thuê</div>
 
-        <ul className="nav flex-column">
-          <li className="nav-item">
-            <NavLink to="/user/my-room" className="nav-link">
-              Phòng của tôi
+          <nav className="d-flex flex-lg-column gap-2 sidebar-menu">
+            <NavLink
+              to="/user/my-room"
+              className={({ isActive }) =>
+                `btn sidebar-btn d-flex align-items-center gap-2 w-100 ${isActive ? "active" : ""}`
+              }
+            >
+              <i className="bi bi-house-door-fill"></i>
+              <span>Phòng của tôi</span>
             </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/user/my-invoices" className="nav-link">
-              Hóa đơn
-            </NavLink>
-          </li>
-          <li className="nav-item">
-            <NavLink to="/user/support" className="nav-link">
-              Hỗ trợ
-            </NavLink>
-          </li>
-        </ul>
-      </div>
 
-      {/* Content */}
-      <div className="user-content flex-grow-1">
-        <div className="user-header">
-          <h5>Xin chào người dùng</h5>
-        </div>
+            <NavLink
+              to="/user/my-invoices"
+              className={({ isActive }) =>
+                `btn sidebar-btn d-flex align-items-center gap-2 w-100 ${isActive ? "active" : ""}`
+              }
+            >
+              <i className="bi bi-receipt-cutoff"></i>
+              <span>Hóa đơn</span>
+            </NavLink>
 
-        <div className="user-main p-3">
+            <NavLink
+              to="/user/support"
+              className={({ isActive }) =>
+                `btn sidebar-btn d-flex align-items-center gap-2 w-100 ${isActive ? "active" : ""}`
+              }
+            >
+              <i className="bi bi-headset"></i>
+              <span>Hỗ trợ</span>
+            </NavLink>
+          </nav>
+        </aside>
+
+        {/* Main Content */}
+        <main className="col-12 col-lg-10 p-4 app-main">
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   );

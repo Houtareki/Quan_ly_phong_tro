@@ -14,7 +14,7 @@ function Support() {
   };
 
   return (
-    <div className="user-card support-page">
+    <div className="card border-0 shadow-sm rounded-4 p-4 support-page">
       <div className="support-header">
         <h2>Hỗ trợ</h2>
         <p>Gửi yêu cầu hoặc phản hồi đến quản lý phòng trọ</p>
