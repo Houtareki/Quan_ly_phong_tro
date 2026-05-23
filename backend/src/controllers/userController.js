@@ -82,15 +82,29 @@ export const getMyInvoices = async (req, res) => {
   try {
     const tenantId = getTenantIdFromRequest(req);
 
-    const invoices = await Invoice.find({ tenantId })
+    const { startDate, endDate } = req.query;
+    const filter = { tenantId };
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) {
+        filter.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = end;
+      }
+    }
+
+    const invoices = await Invoice.find(filter)
       .populate("roomId", "roomCode roomType")
       .populate("tenantId", "fullname phone")
       .populate("contractId", "startDate endDate status")
       .sort({ year: -1, month: -1 });
 
-    res.status(200).json(
-      formatResponse(invoices, "Lấy hóa đơn của tôi thành công"),
-    );
+    res
+      .status(200)
+      .json(formatResponse(invoices, "Lấy hóa đơn của tôi thành công"));
   } catch (error) {
     res.status(500).json({
       message: "Lỗi khi lấy hóa đơn",
@@ -102,7 +116,12 @@ export const getMyInvoices = async (req, res) => {
 export const createSupportRequest = async (req, res) => {
   try {
     const tenantId = getTenantIdFromRequest(req);
-    const { content, description, issueType = ISSUE_TYPE.OTHER, roomId } = req.body;
+    const {
+      content,
+      description,
+      issueType = ISSUE_TYPE.OTHER,
+      roomId,
+    } = req.body;
     const requestDescription = description || content;
 
     if (!requestDescription) {
@@ -127,9 +146,7 @@ export const createSupportRequest = async (req, res) => {
       description: requestDescription,
     });
 
-    res.status(201).json(
-      formatResponse(newRequest, "Gửi yêu cầu thành công"),
-    );
+    res.status(201).json(formatResponse(newRequest, "Gửi yêu cầu thành công"));
   } catch (error) {
     res.status(500).json({
       message: "Lỗi khi gửi yêu cầu",

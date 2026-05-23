@@ -20,7 +20,19 @@ const requestJson = async (path, options) => {
 
 export const getMyRoom = () => requestJson("/my-room");
 
-export const getMyInvoices = () => requestJson("/my-invoices");
+export const getMyInvoices = async (startDate, endDate) => {
+  const tenantId =
+    localStorage.getItem("tenantId") || import.meta.env.VITE_DEMO_TENANT_ID;
+  const params = new URLSearchParams();
+  if (tenantId) params.append("tenantId", tenantId);
+  if (startDate) params.append("startDate", startDate);
+  if (endDate) params.append("endDate", endDate);
+
+  const res = await fetch(`${API_URL}/user/my-invoices?${params.toString()}`);
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.message || "Không thể tải dữ liệu");
+  return body;
+};
 
 export const sendSupport = (data) =>
   requestJson("/support", {

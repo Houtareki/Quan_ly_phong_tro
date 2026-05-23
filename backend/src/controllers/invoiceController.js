@@ -1,4 +1,5 @@
 import Invoice from "../models/Invoice.js";
+import Transaction from "../models/Transaction.js";
 import { INVOICE_STATUS } from "../constants/enums.js";
 
 const calculateTotalAmount = ({
@@ -61,7 +62,16 @@ const getInvoiceStatus = (invoice) => {
 
 export const getInvoices = async (req, res) => {
   try {
-    const { contractId, tenantId, roomId, month, year, status } = req.query;
+    const {
+      contractId,
+      tenantId,
+      roomId,
+      month,
+      year,
+      status,
+      startDate,
+      endDate,
+    } = req.query;
 
     const filter = {};
 
@@ -71,6 +81,18 @@ export const getInvoices = async (req, res) => {
     if (month) filter.month = Number(month);
     if (year) filter.year = Number(year);
     if (status) filter.status = status;
+
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) {
+        filter.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = end;
+      }
+    }
 
     const invoices = await Invoice.find(filter)
       .populate("roomId", "roomCode roomType")
@@ -193,6 +215,12 @@ export const addPayment = async (req, res) => {
     const { id } = req.params;
     const { paidAmount, paymentMethod, note } = req.body;
 
+    if (!paidAmount || isNaN(paidAmount) || paidAmount <= 0) {
+      return res.status(400).json({
+        message: "Số tiền thanh toán không hợp lệ (bị trống hoặc bằng 0)!",
+      });
+    }
+
     const invoice = await Invoice.findById(id);
 
     if (!invoice) {
@@ -221,6 +249,15 @@ export const addPayment = async (req, res) => {
     invoice.status = getInvoiceStatus(invoice);
 
     await invoice.save();
+
+    await Transaction.create({
+      type: "INCOME",
+      amount: paidAmount,
+      category: "Thu tiền phòng & dịch vụ",
+      roomId: invoice.roomId,
+      date: new Date(),
+      description: `Thu tiền hóa đơn tháng ${invoice.month}/${invoice.year} (Thu thủ công)`,
+    });
 
     res.status(200).json({
       message: "Cập nhật thanh toán thành công",

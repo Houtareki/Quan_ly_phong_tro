@@ -1,3 +1,4 @@
+import { addPayment } from "../services/invoiceApi";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { INVOICE_STATUS, getPaymentButtonLabel } from "../utils/invoiceStatus";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +8,20 @@ import "./InvoiceCard.css";
 
 const InvoiceCard = ({ invoice }) => {
   const navigate = useNavigate();
+
+  const handleConfirmPayment = async () => {
+    if (
+      window.confirm(`Xác nhận đã thu đủ tiền cho Phòng ${invoice.roomName}?`)
+    ) {
+      try {
+        await addPayment(invoice.id, invoice.remainingAmount);
+        alert("Xác nhận thanh toán thành công!");
+        window.location.reload();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+  };
 
   return (
     <div className="col-12 col-md-6 ">
@@ -46,7 +61,10 @@ const InvoiceCard = ({ invoice }) => {
             </button>
 
             {invoice.status !== INVOICE_STATUS.PAID && (
-              <button className="btn confirm-paid-btn fw-bold">
+              <button
+                className="btn confirm-paid-btn fw-bold"
+                onClick={handleConfirmPayment}
+              >
                 {getPaymentButtonLabel(invoice.status)}
               </button>
             )}

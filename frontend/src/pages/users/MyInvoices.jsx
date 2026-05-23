@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getMyInvoices } from "./services/userService";
 import { createVNPayUrl } from "./services/paymentApi";
-import { filterOptions } from "../invoices/utils/invoiceStatus";
 import InvoiceFilterBar from "../invoices/components/InvoiceFilterBar";
 import "./Style.css";
 
@@ -11,8 +10,33 @@ function MyInvoices() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Thêm biến Ngày tháng
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    return new Date(date.getFullYear(), date.getMonth(), 1)
+      .toISOString()
+      .split("T")[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split("T")[0];
+  });
+
+  // Tách hàm fetchInvoices dùng chung
+  const fetchInvoices = () => {
+    setLoading(true);
+    getMyInvoices(startDate, endDate)
+      .then((res) => {
+        setInvoices(res.data || []);
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   useEffect(() => {
-    let mounted = true;
     const params = new URLSearchParams(window.location.search);
     const vnpayResult = params.get("vnpay_result");
     const vnpayCode = params.get("code");
@@ -29,32 +53,17 @@ function MyInvoices() {
       window.history.replaceState({}, "", window.location.pathname);
     }
 
-    getMyInvoices()
-      .then((res) => {
-        if (mounted) {
-          setInvoices(res.data || []);
-        }
-      })
-      .catch((err) => {
-        if (mounted) {
-          setError(err.message);
-        }
-      })
-      .finally(() => {
-        if (mounted) {
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      mounted = false;
-    };
+    // Tải dữ liệu lần đầu
+    fetchInvoices();
   }, []);
+
+  const handleSearch = () => {
+    fetchInvoices();
+  };
 
   const handlePayWithVNPay = async (transactionId, amount) => {
     try {
       const paymentUrl = await createVNPayUrl(transactionId, amount);
-
       window.location.assign(paymentUrl);
     } catch (error) {
       alert(error.message || "Lỗi kết nối VNPay");
@@ -68,7 +77,15 @@ function MyInvoices() {
 
   return (
     <div className="user-card">
-      <InvoiceFilterBar filter={filter} onFilterChange={setFilter} />
+      <InvoiceFilterBar
+        filter={filter}
+        onFilterChange={setFilter}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        onSearch={handleSearch}
+      />
 
       {error && <div className="alert">{error}</div>}
       {loading && <p>Loading...</p>}

@@ -14,21 +14,32 @@ const InvoiceListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    return new Date(date.getFullYear(), date.getMonth(), 1)
+      .toISOString()
+      .split("T")[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split("T")[0];
+  });
+
+  const fetchInvoices = async () => {
+    setLoading(true);
+    try {
+      const data = await getInvoices(startDate, endDate);
+      setInvoices(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        const data = await getInvoices();
-        setInvoices(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchInvoices();
   }, []);
 
@@ -65,7 +76,15 @@ const InvoiceListPage = () => {
         }
       />
 
-      <InvoiceFilterBar filter={filter} onFilterChange={handleFilterChange} />
+      <InvoiceFilterBar
+        filter={filter}
+        onFilterChange={handleFilterChange}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        onSearch={fetchInvoices}
+      />
 
       {loading && <div className="text-muted">Đang tải hóa đơn...</div>}
       {error && <div className="alert alert-danger">{error}</div>}

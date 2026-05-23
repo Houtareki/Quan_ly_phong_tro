@@ -1,7 +1,15 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-export const getInvoices = async () => {
-  const response = await fetch(`${API_URL}/invoices`);
+export const getInvoices = async (startDate, endDate) => {
+  let url = `${API_URL}/invoices`;
+  if (startDate || endDate) {
+    const params = new URLSearchParams();
+    if (startDate) params.append("startDate", startDate);
+    if (endDate) params.append("endDate", endDate);
+    url += `?${params.toString()}`;
+  }
+
+  const response = await fetch(url);
 
   if (!response.ok) {
     throw new Error("Không thể lấy danh sách hóa đơn");
@@ -16,6 +24,7 @@ export const getInvoices = async () => {
     month: invoice.month,
     year: invoice.year,
     totalAmount: invoice.totalAmount,
+    remainingAmount: invoice.remainingAmount,
     status: invoice.status,
   }));
 };
@@ -67,4 +76,22 @@ export const createInvoice = async (payload) => {
   }
 
   return body.invoice;
+};
+
+export const addPayment = async (invoiceId, amount) => {
+  const response = await fetch(`${API_URL}/invoices/${invoiceId}/payment`, {
+    method: "POST",
+    headers: { "Content-type": "application/json" },
+    body: JSON.stringify({
+      paidAmount: amount,
+      paymentMethod: "CASH",
+      note: "Chủ trọ xác nhận thu tiền thủ công",
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || "Không thể xác nhận thanh toán");
+  }
+  return response.json();
 };
