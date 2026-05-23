@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getMyInvoices } from "./services/userService";
+import { createVNPayUrl } from "./services/paymentApi";
 import { filterOptions } from "../invoices/utils/invoiceStatus";
 import "./Style.css";
 
@@ -11,6 +12,21 @@ function MyInvoices() {
 
   useEffect(() => {
     let mounted = true;
+    const params = new URLSearchParams(window.location.search);
+    const vnpayResult = params.get("vnpay_result");
+    const vnpayCode = params.get("code");
+
+    if (vnpayResult) {
+      if (vnpayResult === "success") {
+        alert("Thanh toán VNPay thành công");
+      } else if (vnpayResult === "invalid_signature") {
+        alert("Chữ ký VNPay không hợp lệ");
+      } else {
+        alert(`Thanh toán VNPay thất bại${vnpayCode ? `: ${vnpayCode}` : ""}`);
+      }
+
+      window.history.replaceState({}, "", window.location.pathname);
+    }
 
     getMyInvoices()
       .then((res) => {
@@ -33,6 +49,16 @@ function MyInvoices() {
       mounted = false;
     };
   }, []);
+
+  const handlePayWithVNPay = async (transactionId, amount) => {
+    try {
+      const paymentUrl = await createVNPayUrl(transactionId, amount);
+
+      window.location.assign(paymentUrl);
+    } catch (error) {
+      alert(error.message || "Lỗi kết nối VNPay");
+    }
+  };
 
   const filteredInvoices = useMemo(() => {
     if (filter === "ALL") return invoices;
@@ -80,6 +106,16 @@ function MyInvoices() {
                 </strong>
                 <p>{invoice.status}</p>
               </div>
+
+              <button
+                className={`btn ${invoice.status === "PAID" ? "btn-success" : "btn-primary"}`}
+                disabled={invoice.status === "PAID"}
+                onClick={() =>
+                  handlePayWithVNPay(invoice._id, invoice.totalAmount)
+                }
+              >
+                {invoice.status === "PAID" ? "Đã thanh toán" : "Thanh toán"}
+              </button>
             </div>
           ))}
         </div>

@@ -1,9 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom";
-import "./UserAppLayout.css"
+import "./UserAppLayout.css";
 function UserAppLayout() {
   return (
     <div className="user-layout d-flex">
-      
       {/* Sidebar */}
       <div className="user-sidebar">
         <h4 className="p-3">User Panel</h4>
@@ -37,7 +36,6 @@ function UserAppLayout() {
           <Outlet />
         </div>
       </div>
-
     </div>
   );
 }

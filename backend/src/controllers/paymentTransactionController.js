@@ -6,6 +6,9 @@ import {
   PAYMENT_STATUS,
 } from "../constants/enums.js";
 
+import crypto from "crypto";
+import qs from "qs";
+
 const getPaidAmount = (invoice) =>
   invoice.paymentHistory.reduce(
     (total, payment) => total + payment.paidAmount,
@@ -353,3 +356,188 @@ export const rejectPaymentTransaction = async (req, res) => {
     });
   }
 };
+
+export const createVNPayUrl = async (req, res) => {
+  try {
+    process.env.TZ = "Asia/Ho_Chi_Minh";
+
+    const tmnCode = process.env.VNP_TMN_CODE?.trim();
+    const secretKey = process.env.VNP_HASH_SECRET?.trim();
+    const vnpUrl = process.env.VNP_URL?.trim();
+    const returnUrl = process.env.VNP_RETURN_URL?.trim();
+    const { amount, invoiceInfo, transactionId } = req.body;
+
+    if (!tmnCode || !secretKey || !vnpUrl || !returnUrl) {
+      return res.status(500).json({
+        message: "Thiếu cấu hình VNPAY trong backend/.env",
+      });
+    }
+
+    const paymentAmount = Math.round(Number(amount));
+    if (!Number.isFinite(paymentAmount) || paymentAmount <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Số tiền thanh toán không hợp lệ" });
+    }
+
+    const date = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const createDate =
+      `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}` +
+      `${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
+    const orderId = transactionId + Date.now().toString();
+
+    if (!orderId) {
+      return res
+        .status(400)
+        .json({ message: "Mã giao dịch VNPay không hợp lệ" });
+    }
+
+    let ipAddr =
+      req.headers["x-forwarded-for"] ||
+      req.connection?.remoteAddress ||
+      req.socket?.remoteAddress ||
+      "127.0.0.1";
+
+    let vnp_Params = {};
+    vnp_Params["vnp_Version"] = "2.1.0";
+    vnp_Params["vnp_Command"] = "pay";
+    vnp_Params["vnp_TmnCode"] = tmnCode;
+    vnp_Params["vnp_Locale"] = "vn";
+    vnp_Params["vnp_CurrCode"] = "VND";
+    vnp_Params["vnp_TxnRef"] = orderId;
+    vnp_Params["vnp_OrderInfo"] = normalizeVNPayText(
+      invoiceInfo || `Thanh toán hóa đơn ${orderId}`,
+    );
+    vnp_Params["vnp_OrderType"] = "other";
+    vnp_Params["vnp_Amount"] = paymentAmount * 100;
+    vnp_Params["vnp_ReturnUrl"] = returnUrl;
+    vnp_Params["vnp_IpAddr"] = normalizeIpAddr(ipAddr);
+    vnp_Params["vnp_CreateDate"] = createDate;
+
+    vnp_Params = sortObject(vnp_Params);
+
+    let signData = qs.stringify(vnp_Params, { encode: false });
+    let hmac = crypto.createHmac("sha512", secretKey);
+    let signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+    vnp_Params["vnp_SecureHash"] = signed;
+
+    let paymentUrl = vnpUrl + "?" + qs.stringify(vnp_Params, { encode: false });
+
+    console.log("=== VNPAY DEBUG ===");
+    console.log("tmnCode:", tmnCode);
+    console.log("signData:", signData);
+    console.log("signed:", signed);
+    console.log("paymentUrl:", paymentUrl);
+    console.log("===================");
+
+    res.status(200).json({ code: "00", paymentUrl });
+  } catch (error) {
+    console.error("VNPay Error:", error);
+    res
+      .status(500)
+      .json({ message: "Lỗi tạo link VNPay", error: error.message });
+  }
+};
+
+export const handleVNPayReturn = async (req, res) => {
+  try {
+    let vnp_Params = { ...req.query };
+    const secureHash = vnp_Params["vnp_SecureHash"];
+
+    delete vnp_Params["vnp_SecureHash"];
+    delete vnp_Params["vnp_SecureHashType"];
+
+    vnp_Params = sortObject(vnp_Params);
+
+    const secretKey = process.env.VNP_HASH_SECRET?.trim();
+    const signData = qs.stringify(vnp_Params, { encode: false });
+    const hmac = crypto.createHmac("sha512", secretKey);
+    const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+
+    const responseCode = req.query["vnp_ResponseCode"];
+    const vnp_TxnRef = req.query["vnp_TxnRef"];
+    const vnp_Amount = parseInt(req.query["vnp_Amount"]) / 100;
+
+    const frontendReturnUrl =
+      process.env.FRONTEND_RETURN_URL?.trim() ||
+      "http://localhost:5173/user/my-invoices";
+
+    let result = "failed";
+    if (secureHash === signed) {
+      if (responseCode === "00") {
+        result = "success";
+
+        const invoiceId = vnp_TxnRef.substring(0, 24);
+        const invoice = await Invoice.findById(invoiceId);
+
+        if (invoice) {
+          const isAlreadyPaid = invoice.paymentHistory.some(
+            (history) => history.note && history.note.includes(vnp_TxnRef),
+          );
+
+          if (!isAlreadyPaid) {
+            invoice.paymentHistory.push({
+              paidAmount: vnp_Amount,
+              paymentMethod: PAYMENT_METHOD.BANK_TRANSFER,
+              paidAt: new Date(),
+              note: `Thanh toán qua VNPay (Mã GD: ${vnp_TxnRef})`,
+            });
+
+            invoice.status = getInvoiceStatus(invoice);
+            await invoice.save();
+          }
+        }
+      }
+    } else {
+      result = "invalid_signature";
+    }
+    res.redirect(
+      `${frontendReturnUrl}?vnpay_result=${result}&code=${responseCode || ""}`,
+    );
+  } catch (error) {
+    console.error("VNPay Return Error:", error);
+    res.status(500).send("Lỗi xử lý kết quả VNPay");
+  }
+};
+
+function normalizeVNPayText(value) {
+  return String(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .replace(/[^A-Za-z0-9 ._-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 255);
+}
+
+function normalizeIpAddr(value) {
+  const raw = (Array.isArray(value) ? value[0] : String(value || ""))
+    .split(",")[0]
+    .trim()
+    .replace(/^::ffff:/, "");
+
+  if (!raw || raw === "::1") {
+    return "127.0.0.1";
+  }
+
+  return raw;
+}
+
+function sortObject(obj) {
+  let sorted = {};
+  let str = [];
+  let key;
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      str.push(encodeURIComponent(key));
+    }
+  }
+  str.sort();
+  for (key = 0; key < str.length; key++) {
+    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+  }
+  return sorted;
+}
