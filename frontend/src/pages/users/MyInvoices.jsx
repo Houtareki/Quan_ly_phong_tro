@@ -1,3 +1,7 @@
+import { useNavigate } from "react-router-dom";
+import InvoiceStatusBadge from "../invoices/components/InvoiceStatusBadge";
+import "../invoices/components/InvoiceCard.css";
+
 import { useEffect, useMemo, useState } from "react";
 import { getMyInvoices } from "./services/userService";
 import { createVNPayUrl } from "./services/paymentApi";
@@ -5,6 +9,8 @@ import InvoiceFilterBar from "../invoices/components/InvoiceFilterBar";
 import "./Style.css";
 
 function MyInvoices() {
+  const navigate = useNavigate();
+
   const [invoices, setInvoices] = useState([]);
   const [filter, setFilter] = useState("ALL");
   const [error, setError] = useState("");
@@ -98,35 +104,57 @@ function MyInvoices() {
       )}
 
       {!loading && filteredInvoices.length > 0 && (
-        <div className="invoice-user-list">
+        <div className="row g-3">
           {filteredInvoices.map((invoice) => (
-            <div
-              className="invoice-user-item border-0 shadow-sm rounded-4 p-4 "
-              style={{ backgroundColor: "#fff" }}
-              key={invoice._id}
-            >
-              <div>
-                <strong>Phòng {invoice.roomId?.roomCode || "N/A"}</strong>
-                <p>
-                  Tháng {String(invoice.month).padStart(2, "0")}/{invoice.year}
-                </p>
-              </div>
-              <div>
-                <strong>
-                  {invoice.totalAmount.toLocaleString("vi-VN")} VND
-                </strong>
-                <p>{invoice.status}</p>
-              </div>
+            <div className="col-12 col-md-6" key={invoice._id}>
+              <div className="card invoice-card border-0 shadow-sm rounded-4 h-100">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                      <h5 className="fw-bold mb-1">
+                        Phòng {invoice.roomId?.roomCode || "N/A"}
+                      </h5>
+                      <p className="text-muted mb-0">
+                        Tháng {String(invoice.month).padStart(2, "0")}/
+                        {invoice.year}
+                      </p>
+                    </div>
 
-              <button
-                className={`btn ${invoice.status === "PAID" ? "btn-success" : "btn-primary"}`}
-                disabled={invoice.status === "PAID"}
-                onClick={() =>
-                  handlePayWithVNPay(invoice._id, invoice.totalAmount)
-                }
-              >
-                {invoice.status === "PAID" ? "Đã thanh toán" : "Thanh toán"}
-              </button>
+                    <InvoiceStatusBadge status={invoice.status} />
+                  </div>
+                  <div className="border-top pt-3 mb-3">
+                    <div className="d-flex justify-content-between">
+                      <span className="text-muted">Tổng tiền</span>
+                      <span
+                        className="fw-bold invoice-total"
+                        style={{ color: "#28a745", fontSize: "1.1rem" }}
+                      >
+                        {invoice.totalAmount.toLocaleString("vi-VN")} VND
+                      </span>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-end gap-2">
+                    <button
+                      className="btn btn-light fw-bold"
+                      onClick={() =>
+                        navigate(`/user/my-invoices/${invoice._id}`)
+                      }
+                    >
+                      Xem chi tiết
+                    </button>
+                    {invoice.status !== "PAID" && (
+                      <button
+                        className="btn btn-success fw-bold shadow-sm"
+                        onClick={() =>
+                          handlePayWithVNPay(invoice._id, invoice.totalAmount)
+                        }
+                      >
+                        Thanh toán VNPay
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           ))}
         </div>

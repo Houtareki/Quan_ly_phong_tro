@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { getInvoiceById } from "./services/invoiceApi";
 import { electricFields, waterFields } from "./constants/invoiceFormFields";
 import {
@@ -20,6 +20,10 @@ const InvoiceDetailPage = () => {
   const { invoiceId } = useParams();
   const navigate = useNavigate();
 
+  const location = useLocation();
+  const isUserView = location.pathname.startsWith("/user");
+  const backUrl = isUserView ? "/user/my-invoices" : "/invoices";
+
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -39,9 +43,16 @@ const InvoiceDetailPage = () => {
     fetchInvoice();
   }, [invoiceId]);
 
-  if (loading) return <AppLayout>Đang tải hóa đơn...</AppLayout>;
+  if (loading)
+    return isUserView ? (
+      <div>Đang tải...</div>
+    ) : (
+      <AppLayout>Đang tải...</AppLayout>
+    );
   if (error)
-    return (
+    return isUserView ? (
+      <div className="alert alert-danger">{error}</div>
+    ) : (
       <AppLayout>
         <div className="alert alert-danger">{error}</div>
       </AppLayout>
@@ -76,25 +87,25 @@ const InvoiceDetailPage = () => {
     detailFormData.newWater,
     detailFormData.waterPrice,
   );
-  return (
-    <AppLayout>
+
+  const content = (
+    <>
+      {" "}
       <div className="d-flex align-items-center gap-3 mb-4">
         <button
           type="button"
           className="btn back-btn"
-          onClick={() => navigate("/invoices")}
+          onClick={() => navigate(backUrl)}
         >
           <i className="bi bi-arrow-left"></i>
         </button>
       </div>
-
       <div className="mb-4">
         <h2 className="fw-bold mb-1">Chi tiết hóa đơn</h2>
         <p className="text-muted mb-0">
           Tháng {String(invoice.month).padStart(2, "0")}/{invoice.year}
         </p>
       </div>
-
       <div className="row justify-content-center">
         <div className="col-12 col-xl-9">
           <div className="card border-0 shadow-sm rounded-4 invoice-form-card">
@@ -104,9 +115,11 @@ const InvoiceDetailPage = () => {
                   <h5 className="fw-bold mb-1">
                     Phòng {invoice.roomId?.roomCode}
                   </h5>
-                  <div className="text-muted">
-                    Khách thuê: {invoice.tenantId?.fullname}
-                  </div>
+                  {!isUserView && (
+                    <div className="text-muted">
+                      Khách thuê: {invoice.tenantId?.fullname}
+                    </div>
+                  )}
                 </div>
 
                 <InvoiceStatusBadge status={invoice.status} />
@@ -152,8 +165,10 @@ const InvoiceDetailPage = () => {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </>
   );
+
+  return isUserView ? content : <AppLayout>{content}</AppLayout>;
 };
 
 export default InvoiceDetailPage;

@@ -51,6 +51,10 @@ function App() {
         <Route path="/user" element={<UserAppLayout />}>
           <Route path="my-room" element={<MyRoom />} />
           <Route path="my-invoices" element={<MyInvoices />} />
+          <Route
+            path="my-invoices/:invoiceId"
+            element={<InvoiceDetailPage />}
+          />
           <Route path="support" element={<Support />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
