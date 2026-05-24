@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import InvoiceStatusBadge from "../invoices/components/InvoiceStatusBadge";
 import "../invoices/components/InvoiceCard.css";
-
+import { formatCurrency } from "../../utils/formatCurrency";
 import { useEffect, useMemo, useState } from "react";
 import { getMyInvoices } from "./services/userService";
 import { createVNPayUrl } from "./services/paymentApi";
@@ -129,7 +129,7 @@ function MyInvoices() {
                         className="fw-bold invoice-total"
                         style={{ color: "#28a745", fontSize: "1.1rem" }}
                       >
-                        {invoice.totalAmount.toLocaleString("vi-VN")} VND
+                        {formatCurrency(invoice.totalAmount)} VND
                       </span>
                     </div>
                   </div>

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInvoiceCalculator } from "./useInvoiceCalculator";
 import { validateForm } from "../utils/invoiceValidation";
 import { initialInvoiceFormData } from "../constants/initialInvoiceFormData";
 import { buildInvoicePayload } from "../utils/buildInvoicePayload";
-import { createInvoice } from "../services/invoiceApi";
+import { createInvoice, getInvoicesByRoomId } from "../services/invoiceApi";
 
 export const useCreateInvoiceForm = (roomOptions, serviceOptions) => {
   const navigate = useNavigate();
@@ -14,6 +14,53 @@ export const useCreateInvoiceForm = (roomOptions, serviceOptions) => {
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  useEffect(() => {
+    if (formData.roomId) {
+      getInvoicesByRoomId(formData.roomId)
+        .then((invoices) => {
+          if (invoices && invoices.length > 0) {
+            const latestInvoice = [...invoices].sort((a, b) => {
+              if (a.year !== b.year) return b.year - a.year;
+              return b.month - a.month;
+            })[0];
+
+            if (latestInvoice && latestInvoice.utilityReading) {
+              const previousServicesIds = (latestInvoice.serviceFees || [])
+                .map((fee) => {
+                  const option = serviceOptions.find(
+                    (opt) => opt.name === fee.name,
+                  );
+                  return option ? option.id : null;
+                })
+                .filter(Boolean);
+
+              setFormData((prev) => ({
+                ...prev,
+                oldElectric:
+                  latestInvoice.utilityReading.newElectric || prev.oldElectric,
+                newElectric:
+                  latestInvoice.utilityReading.newElectric || prev.newElectric,
+                electricPrice:
+                  latestInvoice.utilityReading.electricPrice ||
+                  prev.electricPrice,
+                oldWater:
+                  latestInvoice.utilityReading.newWater || prev.oldWater,
+                newWater:
+                  latestInvoice.utilityReading.newWater || prev.newWater,
+                waterPrice:
+                  latestInvoice.utilityReading.waterPrice || prev.waterPrice,
+                selectedServices:
+                  previousServicesIds.length > 0
+                    ? previousServicesIds
+                    : prev.selectedServices,
+              }));
+            }
+          }
+        })
+        .catch((err) => console.error("Lỗi lấy hóa đơn cũ", err));
+    }
+  }, [formData.roomId, serviceOptions]);
 
   const {
     selectedRoom,

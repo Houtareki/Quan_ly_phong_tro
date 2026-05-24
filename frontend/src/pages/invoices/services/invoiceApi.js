@@ -99,3 +99,12 @@ export const addPayment = async (invoiceId, amount) => {
   }
   return response.json();
 };
+
+export const getInvoicesByRoomId = async (roomId) => {
+  const response = await fetch(`${API_URL}/invoices?roomId=${roomId}`);
+
+  if (!response.ok) return [];
+
+  const body = await response.json();
+  return body.data || [];
+};
