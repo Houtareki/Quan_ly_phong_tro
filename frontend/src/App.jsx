@@ -34,7 +34,7 @@ const RoleSwitcher = () => {
       </button>
       <button
         className="btn btn-info shadow rounded-pill fw-bold ms-2"
-        onClick={() => navigate("/user/my-invoices")}
+        onClick={() => navigate("/user/my-room")}
       >
         <i className="bi bi-person me-2"></i>Người Thuê
       </button>
