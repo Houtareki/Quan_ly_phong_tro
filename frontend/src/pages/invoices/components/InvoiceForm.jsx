@@ -72,6 +72,23 @@ const InvoiceForm = ({ roomOptions, serviceOptions, formState, onCancel }) => {
                 getSelectClass={getSelectClass}
               />
 
+              <div className="mb-4">
+                <label className="form-label fw-bold">
+                  <i className="bi bi-calendar-event me-2"></i>
+                  Hạn thanh toán
+                </label>
+                <input
+                  type="date"
+                  className={getInputClass("dueDate")}
+                  name="dueDate"
+                  value={formData.dueDate || ""}
+                  onChange={handleChange}
+                />
+                {errors.dueDate && (
+                  <div className="invalid-feedback">{errors.dueDate}</div>
+                )}
+              </div>
+
               <RoomPrice roomPrice={selectedRoom?.roomPrice} />
 
               <UtilityReadingSection

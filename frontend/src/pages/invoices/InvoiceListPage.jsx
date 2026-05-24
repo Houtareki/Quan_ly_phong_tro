@@ -14,24 +14,51 @@ const InvoiceListPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        const data = await getInvoices();
-        setInvoices(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    return new Date(date.getFullYear(), date.getMonth(), 1)
+      .toISOString()
+      .split("T")[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split("T")[0];
+  });
 
+  const fetchInvoices = async () => {
+    setLoading(true);
+    try {
+      const data = await getInvoices(startDate, endDate);
+      setInvoices(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  useEffect(() => {
     fetchInvoices();
   }, []);
 
   const navigate = useNavigate();
 
   const { filter, setFilter, filteredInvoices } = useInvoiceFilter(invoices);
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(filteredInvoices.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentInvoices = filteredInvoices.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
 
   return (
     <AppLayout>
@@ -49,13 +76,21 @@ const InvoiceListPage = () => {
         }
       />
 
-      <InvoiceFilterBar filter={filter} onFilterChange={setFilter} />
+      <InvoiceFilterBar
+        filter={filter}
+        onFilterChange={handleFilterChange}
+        startDate={startDate}
+        endDate={endDate}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        onSearch={fetchInvoices}
+      />
 
       {loading && <div className="text-muted">Đang tải hóa đơn...</div>}
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="row g-3">
-        {filteredInvoices.map((invoice) => (
+        {currentInvoices.map((invoice) => (
           <InvoiceCard key={invoice.id} invoice={invoice} />
         ))}
 
@@ -70,6 +105,45 @@ const InvoiceListPage = () => {
           </div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center mt-4">
+          <ul className="pagination shadow-sm">
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+              <button
+                className="page-link text-success"
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+              >
+                Trang trước
+              </button>
+            </li>
+
+            {[...Array(totalPages)].map((_, index) => (
+              <li
+                key={index}
+                className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+              >
+                <button
+                  className={`page-link ${currentPage === index + 1 ? "bg-success border-success text-white" : "text-success"}`}
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
+            <li
+              className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
+            >
+              <button
+                className="page-link text-success"
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+              >
+                Trang tiếp
+              </button>
+            </li>
+          </ul>
+        </div>
+      )}
     </AppLayout>
   );
 };

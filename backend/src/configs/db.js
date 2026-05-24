@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("Kết nối MongoDB thành công");
+    const connection = await mongoose.connect(process.env.MONGO_URI);
+    console.log(
+      `Kết nối MongoDB thành công: ${connection.connection.db.databaseName}`,
+    );
   } catch (error) {
     console.error("Lỗi kết nối MongoDB:", error.message);
     process.exit(1);

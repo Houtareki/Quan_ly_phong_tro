@@ -1,0 +1,73 @@
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 10px;
+  background: #f0f4f3;
+  padding: 10px;
+  border-radius: 14px;
+  margin-bottom: 15px;
+}
+
+.tabs button {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.tabs .active {
+  background: #d1fae5;
+  color: #065f46;
+  font-weight: 600;
+}
+
+/* ALERT */
+.alert {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* EMPTY */
+.empty {
+  text-align: center;
+  padding: 50px;
+  color: #6b7280;
+}
+
+.empty .icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.user-info-list {
+  display: grid;
+  gap: 10px;
+}
+
+.user-info-list p {
+  margin: 0;
+}
+
+.invoice-user-list {
+  display: grid;
+  gap: 12px;
+}
+
+.invoice-user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #dce7e1;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.invoice-user-item p {
+  color: #6b7280;
+  margin: 4px 0 0;
+}

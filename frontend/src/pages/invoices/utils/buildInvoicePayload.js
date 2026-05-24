@@ -10,6 +10,7 @@ export const buildInvoicePayload = (
 
     month: Number(formData.month),
     year: Number(formData.year),
+    dueDate: formData.dueDate,
     roomPrice: selectedRoom?.roomPrice || 0,
 
     utilityReading: {

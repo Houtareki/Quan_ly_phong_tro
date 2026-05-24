@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -7,6 +8,7 @@ import "./models/Room.js";
 import "./models/Contract.js";
 import "./models/Invoice.js";
 import "./models/PaymentTransaction.js";
+import "./models/Transaction.js";
 import invoiceRoutes from "./routes/invoiceRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
 import contractRoutes from "./routes/contractRoutes.js";
@@ -14,12 +16,19 @@ import paymentTransactionRoutes from "./routes/paymentTransactionRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import authRoutes from "./routes/authRoutes.js";       // ← thêm
 import adminRoutes from "./routes/adminRoutes.js";     // ← thêm
+import userRoutes from "./routes/userRoutes.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -31,8 +40,16 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/contracts", contractRoutes);
 app.use("/api/payment-transactions", paymentTransactionRoutes);
 app.use("/api/reports", reportRoutes);
+
 app.use("/api/auth", authRoutes);     // ← thêm
 app.use("/api/admin", adminRoutes);   // ← thêm
+app.use("/api/user", userRoutes);
+app.use("/api/transactions", transactionRoutes);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Lỗi máy chủ nội bộ", error: err.message });
+});
 
 const PORT = process.env.PORT || 5000;
 

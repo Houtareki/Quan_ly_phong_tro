@@ -74,3 +74,6 @@ coverage/
 .stylelintcache
 
 docker-data/
+
+postman/
+seed-data/

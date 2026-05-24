@@ -1,0 +1,41 @@
+.transaction-summary-card {
+  border-radius: 12px;
+  padding: 20px;
+  flex: 1;
+  min-width: 200px;
+}
+.summary-income {
+  background-color: #e8f5e9;
+  border: 1px solid #c8e6c9;
+}
+.summary-expense {
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+}
+.summary-balance {
+  background-color: #e0f2f1;
+  border: 1px solid #b2dfdb;
+}
+
+.transaction-list-item {
+  transition: all 0.2s ease-in-out;
+  border-left: 4px solid transparent;
+}
+.transaction-list-item:hover {
+  background-color: #f8f9fa;
+}
+.transaction-income {
+  border-left-color: #2e7d32;
+}
+.transaction-expense {
+  border-left-color: #c62828;
+}
+
+.amount-income {
+  color: #2e7d32;
+  font-weight: bold;
+}
+.amount-expense {
+  color: #c62828;
+  font-weight: bold;
+}

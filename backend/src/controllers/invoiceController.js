@@ -1,5 +1,7 @@
 import Invoice from "../models/Invoice.js";
+import Transaction from "../models/Transaction.js";
 import { INVOICE_STATUS } from "../constants/enums.js";
+import mongoose from "mongoose";
 
 const calculateTotalAmount = ({
   roomPrice = 0,
@@ -14,6 +16,7 @@ const calculateTotalAmount = ({
   const newWater = utilityReading.newWater || 0;
   const waterPrice = utilityReading.waterPrice || 0;
 
+  // Chỉ số tiện ích được tính dựa trên hiệu giữa chỉ số mới và chỉ số cũ.
   const electricCost = (newElectric - oldElectric) * electricPrice;
   const waterCost = (newWater - oldWater) * waterPrice;
 
@@ -43,6 +46,7 @@ const formatInvoiceResponse = (invoice) => {
   };
 };
 
+// Trạng thái hóa đơn được xác định từ lịch sử thanh toán đã xác nhận, không tính các giao dịch đang chờ xử lý.
 const getInvoiceStatus = (invoice) => {
   const paidAmount = getPaidAmount(invoice);
 
@@ -59,7 +63,16 @@ const getInvoiceStatus = (invoice) => {
 
 export const getInvoices = async (req, res) => {
   try {
-    const { contractId, tenantId, roomId, month, year, status } = req.query;
+    const {
+      contractId,
+      tenantId,
+      roomId,
+      month,
+      year,
+      status,
+      startDate,
+      endDate,
+    } = req.query;
 
     const filter = {};
 
@@ -70,10 +83,23 @@ export const getInvoices = async (req, res) => {
     if (year) filter.year = Number(year);
     if (status) filter.status = status;
 
+    if (startDate || endDate) {
+      filter.createdAt = {};
+      if (startDate) {
+        filter.createdAt.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = end;
+      }
+    }
+
     const invoices = await Invoice.find(filter)
       .populate("roomId", "roomCode roomType")
       .populate("tenantId", "fullname phone")
-      .populate("contractId", "startDate endDate status");
+      .populate("contractId", "startDate endDate status")
+      .lean();
 
     const formattedInvoices = invoices.map(formatInvoiceResponse);
 
@@ -95,7 +121,8 @@ export const getInvoiceById = async (req, res) => {
     const invoice = await Invoice.findById(id)
       .populate("roomId", "roomCode roomType")
       .populate("tenantId", "fullname phone")
-      .populate("contractId", "startDate endDate status");
+      .populate("contractId", "startDate endDate status")
+      .lean();
 
     if (!invoice) {
       return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
@@ -125,6 +152,12 @@ export const createInvoice = async (req, res) => {
       utilityReading = {},
       serviceFees = [],
     } = req.body;
+
+    if (!dueDate) {
+      return res.status(400).json({
+        message: "Vui lòng nhập hạn thanh toán",
+      });
+    }
 
     if (utilityReading.oldElectric > utilityReading.newElectric) {
       return res.status(400).json({
@@ -166,12 +199,6 @@ export const createInvoice = async (req, res) => {
       paymentHistory: [],
     });
 
-    if (!dueDate) {
-      return res.status(400).json({
-        message: "Vui lòng nhập hạn thanh toán",
-      });
-    }
-
     res
       .status(201)
       .json({ message: "Tạo hóa đơn thành công", invoice: newInvoice });
@@ -187,11 +214,20 @@ export const createInvoice = async (req, res) => {
 };
 
 export const addPayment = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { id } = req.params;
     const { paidAmount, paymentMethod, note } = req.body;
 
-    const invoice = await Invoice.findById(id);
+    if (!paidAmount || isNaN(paidAmount) || paidAmount <= 0) {
+      return res.status(400).json({
+        message: "Số tiền thanh toán không hợp lệ (bị trống hoặc bằng 0)!",
+      });
+    }
+
+    const invoice = await Invoice.findById(id).session(session);
 
     if (!invoice) {
       return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
@@ -202,6 +238,7 @@ export const addPayment = async (req, res) => {
       0,
     );
 
+    // Ngăn chặn thanh toán thừa để số dư hóa đơn không bị âm.
     if (currentTotalPaid + paidAmount > invoice.totalAmount) {
       return res.status(400).json({
         message: "Số tiền thanh toán vượt quá tổng số tiền của hóa đơn",
@@ -217,13 +254,34 @@ export const addPayment = async (req, res) => {
 
     invoice.status = getInvoiceStatus(invoice);
 
-    await invoice.save();
+    await invoice.save({ session });
+
+    await Transaction.create(
+      [
+        {
+          type: "INCOME",
+          amount: paidAmount,
+          category: "Thu tiền phòng & dịch vụ",
+          roomId: invoice.roomId,
+          date: new Date(),
+          description: `Thu tiền hóa đơn tháng ${invoice.month}/${invoice.year} (Thu thủ công)`,
+          status: "COMPLETED",
+        },
+      ],
+      { session },
+    );
+
+    await session.commitTransaction();
+    session.endSession();
 
     res.status(200).json({
       message: "Cập nhật thanh toán thành công",
       data: formatInvoiceResponse(invoice),
     });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
     res.status(500).json({
       message: "Lỗi cập nhật thanh toán",
       error: error.message,

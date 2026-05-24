@@ -23,7 +23,7 @@ const RoomStatusChart = ({ roomSummary }) => {
       <h6 className="report-card-title">Tình trạng phòng</h6>
 
       <div className="room-pie-wrap">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={280}>
           <PieChart>
             <Pie
               data={data}
