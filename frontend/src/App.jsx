@@ -1,17 +1,26 @@
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import "./App.css";
-import InvoiceListPage from "./pages/invoices/InvoiceListPage";
-import CreateInvoicePage from "./pages/invoices/CreateInvoicePage";
-import InvoiceDetailPage from "./pages/invoices/InvoiceDetailPage";
-import ReportsPage from "./pages/reports/ReportsPage";
-import TransactionListPage from "./pages/transactions/TransactionListPage";
-import CreateTransactionPage from "./pages/transactions/CreateTransactionPage";
-import NotFoundPage from "./pages/notFound/NotFoundPage";
 
-import UserAppLayout from "./components/layout/UserAppLayout";
-import MyRoom from "./pages/users/MyRoom";
-import MyInvoices from "./pages/users/MyInvoices";
-import Support from "./pages/users/Support";
+const InvoiceListPage = lazy(() => import("./pages/invoices/InvoiceListPage"));
+const CreateInvoicePage = lazy(
+  () => import("./pages/invoices/CreateInvoicePage"),
+);
+const InvoiceDetailPage = lazy(
+  () => import("./pages/invoices/InvoiceDetailPage"),
+);
+const ReportsPage = lazy(() => import("./pages/reports/ReportsPage"));
+const TransactionListPage = lazy(
+  () => import("./pages/transactions/TransactionListPage"),
+);
+const CreateTransactionPage = lazy(
+  () => import("./pages/transactions/CreateTransactionPage"),
+);
+const NotFoundPage = lazy(() => import("./pages/notFound/NotFoundPage"));
+const UserAppLayout = lazy(() => import("./components/layout/UserAppLayout"));
+const MyRoom = lazy(() => import("./pages/users/MyRoom"));
+const MyInvoices = lazy(() => import("./pages/users/MyInvoices"));
+const Support = lazy(() => import("./pages/users/Support"));
 
 const RoleSwitcher = () => {
   const navigate = useNavigate();
@@ -37,28 +46,38 @@ function App() {
   return (
     <>
       <RoleSwitcher />
-      <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<ReportsPage />} />
-        <Route path="/invoices" element={<InvoiceListPage />} />
-        <Route path="/invoices/create" element={<CreateInvoicePage />} />
-        <Route path="/invoices/:invoiceId" element={<InvoiceDetailPage />} />
-        <Route path="/transactions" element={<TransactionListPage />} />
-        <Route
-          path="/transactions/create"
-          element={<CreateTransactionPage />}
-        />
-        <Route path="/user" element={<UserAppLayout />}>
-          <Route path="my-room" element={<MyRoom />} />
-          <Route path="my-invoices" element={<MyInvoices />} />
+      <Suspense
+        fallback={
+          <div className="d-flex align-items-center justify-content-center vh-100">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Đang tải...</span>
+            </div>
+          </div>
+        }
+      >
+        <Routes>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<ReportsPage />} />
+          <Route path="/invoices" element={<InvoiceListPage />} />
+          <Route path="/invoices/create" element={<CreateInvoicePage />} />
+          <Route path="/invoices/:invoiceId" element={<InvoiceDetailPage />} />
+          <Route path="/transactions" element={<TransactionListPage />} />
           <Route
-            path="my-invoices/:invoiceId"
-            element={<InvoiceDetailPage />}
+            path="/transactions/create"
+            element={<CreateTransactionPage />}
           />
-          <Route path="support" element={<Support />} />
-        </Route>
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route path="/user" element={<UserAppLayout />}>
+            <Route path="my-room" element={<MyRoom />} />
+            <Route path="my-invoices" element={<MyInvoices />} />
+            <Route
+              path="my-invoices/:invoiceId"
+              element={<InvoiceDetailPage />}
+            />
+            <Route path="support" element={<Support />} />
+          </Route>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </>
   );
 }

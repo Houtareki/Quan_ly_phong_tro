@@ -25,13 +25,15 @@ const findActiveContract = (tenantId) =>
   })
     .populate("roomId")
     .populate("tenantId", "fullname phone email")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .lean();
 
 const findLatestInvoiceRoom = (tenantId) =>
   Invoice.findOne({ tenantId })
     .populate("roomId")
     .populate("tenantId", "fullname phone email")
-    .sort({ year: -1, month: -1, createdAt: -1 });
+    .sort({ year: -1, month: -1, createdAt: -1 })
+    .lean();
 
 export const getMyRoom = async (req, res) => {
   try {
@@ -49,7 +51,7 @@ export const getMyRoom = async (req, res) => {
         .json(formatResponse(null, "Chưa có phòng đang thuê"));
     }
 
-    const room = roomDocument.toObject();
+    const room = roomDocument;
 
     res.status(200).json(
       formatResponse(
@@ -100,7 +102,8 @@ export const getMyInvoices = async (req, res) => {
       .populate("roomId", "roomCode roomType")
       .populate("tenantId", "fullname phone")
       .populate("contractId", "startDate endDate status")
-      .sort({ year: -1, month: -1 });
+      .sort({ year: -1, month: -1 })
+      .lean();
 
     res
       .status(200)

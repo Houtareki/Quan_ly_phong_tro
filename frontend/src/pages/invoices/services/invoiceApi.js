@@ -2,6 +2,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export const getInvoices = async (startDate, endDate) => {
   let url = `${API_URL}/invoices`;
+
   if (startDate || endDate) {
     const params = new URLSearchParams();
     if (startDate) params.append("startDate", startDate);
@@ -12,7 +13,8 @@ export const getInvoices = async (startDate, endDate) => {
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error("Không thể lấy danh sách hóa đơn");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Không thể lấy danh sách hóa đơn");
   }
 
   const body = await response.json();
@@ -33,7 +35,8 @@ export const getInvoiceById = async (invoiceId) => {
   const response = await fetch(`${API_URL}/invoices/${invoiceId}`);
 
   if (!response.ok) {
-    throw new Error("Không thể lấy chi tiết hóa đơn");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Không thể lấy chi tiết hóa đơn");
   }
 
   const body = await response.json();
@@ -45,7 +48,8 @@ export const getActiveContracts = async () => {
   const response = await fetch(`${API_URL}/contracts/active`);
 
   if (!response.ok) {
-    throw new Error("Không thể lấy danh sách hợp đồng");
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Không thể lấy danh sách hợp đồng");
   }
 
   const body = await response.json();

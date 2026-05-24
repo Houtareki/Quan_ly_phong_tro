@@ -211,7 +211,8 @@ export const getPaymentTransactions = async (req, res) => {
       .populate("roomId", "roomCode roomType")
       .populate("tenantId", "fullname phone")
       .populate("contractId", "startDate endDate status")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json({
       message: "Lấy danh sách giao dịch thanh toán thành công!",
@@ -235,7 +236,8 @@ export const getPaymentTransactionById = async (req, res) => {
       .populate("tenantId", "fullname phone")
       .populate("contractId", "startDate endDate status")
       .populate("confirmedBy", "fullname phone")
-      .populate("rejectedBy", "fullname phone");
+      .populate("rejectedBy", "fullname phone")
+      .lean();
 
     if (!transaction) {
       return res.status(404).json({ message: "Payment transaction not found" });

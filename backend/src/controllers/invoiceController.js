@@ -1,6 +1,7 @@
 import Invoice from "../models/Invoice.js";
 import Transaction from "../models/Transaction.js";
 import { INVOICE_STATUS } from "../constants/enums.js";
+import mongoose from "mongoose";
 
 const calculateTotalAmount = ({
   roomPrice = 0,
@@ -97,7 +98,8 @@ export const getInvoices = async (req, res) => {
     const invoices = await Invoice.find(filter)
       .populate("roomId", "roomCode roomType")
       .populate("tenantId", "fullname phone")
-      .populate("contractId", "startDate endDate status");
+      .populate("contractId", "startDate endDate status")
+      .lean();
 
     const formattedInvoices = invoices.map(formatInvoiceResponse);
 
@@ -119,7 +121,8 @@ export const getInvoiceById = async (req, res) => {
     const invoice = await Invoice.findById(id)
       .populate("roomId", "roomCode roomType")
       .populate("tenantId", "fullname phone")
-      .populate("contractId", "startDate endDate status");
+      .populate("contractId", "startDate endDate status")
+      .lean();
 
     if (!invoice) {
       return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
@@ -211,6 +214,9 @@ export const createInvoice = async (req, res) => {
 };
 
 export const addPayment = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { id } = req.params;
     const { paidAmount, paymentMethod, note } = req.body;
@@ -221,7 +227,7 @@ export const addPayment = async (req, res) => {
       });
     }
 
-    const invoice = await Invoice.findById(id);
+    const invoice = await Invoice.findById(id).session(session);
 
     if (!invoice) {
       return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
@@ -248,22 +254,34 @@ export const addPayment = async (req, res) => {
 
     invoice.status = getInvoiceStatus(invoice);
 
-    await invoice.save();
+    await invoice.save({ session });
 
-    await Transaction.create({
-      type: "INCOME",
-      amount: paidAmount,
-      category: "Thu tiền phòng & dịch vụ",
-      roomId: invoice.roomId,
-      date: new Date(),
-      description: `Thu tiền hóa đơn tháng ${invoice.month}/${invoice.year} (Thu thủ công)`,
-    });
+    await Transaction.create(
+      [
+        {
+          type: "INCOME",
+          amount: paidAmount,
+          category: "Thu tiền phòng & dịch vụ",
+          roomId: invoice.roomId,
+          date: new Date(),
+          description: `Thu tiền hóa đơn tháng ${invoice.month}/${invoice.year} (Thu thủ công)`,
+          status: "COMPLETED",
+        },
+      ],
+      { session },
+    );
+
+    await session.commitTransaction();
+    session.endSession();
 
     res.status(200).json({
       message: "Cập nhật thanh toán thành công",
       data: formatInvoiceResponse(invoice),
     });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
     res.status(500).json({
       message: "Lỗi cập nhật thanh toán",
       error: error.message,

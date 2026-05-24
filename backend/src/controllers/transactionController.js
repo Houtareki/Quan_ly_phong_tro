@@ -51,7 +51,8 @@ export const getTransactions = async (req, res) => {
 
     const transactions = await Transaction.find(query)
       .populate("roomId", "roomCode")
-      .sort({ date: -1, createdAt: -1 });
+      .sort({ date: -1, createdAt: -1 })
+      .lean();
 
     const allTransactions = await Transaction.find({});
     let totalIncomes = 0;

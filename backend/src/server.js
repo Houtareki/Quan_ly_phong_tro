@@ -21,7 +21,12 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -35,6 +40,11 @@ app.use("/api/payment-transactions", paymentTransactionRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/transactions", transactionRoutes);
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Lỗi máy chủ nội bộ", error: err.message });
+});
 
 const PORT = process.env.PORT || 5000;
 
