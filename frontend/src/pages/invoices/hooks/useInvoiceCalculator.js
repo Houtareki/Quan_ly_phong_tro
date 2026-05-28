@@ -12,10 +12,13 @@ export const useInvoiceCalculator = (formData, roomOptions, serviceOptions) => {
   }, [formData.roomId, roomOptions]);
 
   const selectedServiceFees = useMemo(() => {
-    return serviceOptions.filter((service) =>
-      formData.selectedServices.includes(service.id),
-    );
-  }, [formData.selectedServices, serviceOptions]);
+    return serviceOptions
+      .filter((service) => formData.selectedServices.includes(service.id))
+      .map((service) => ({
+        ...service,
+        quantity: formData.serviceQuantities?.[service.id] || 1,
+      }));
+  }, [formData.selectedServices, formData.serviceQuantities, serviceOptions]);
 
   const electricCost = useMemo(() => {
     return calculateElectricCost(
@@ -27,15 +30,18 @@ export const useInvoiceCalculator = (formData, roomOptions, serviceOptions) => {
 
   const waterCost = useMemo(() => {
     return calculateWaterCost(
-      formData.oldWater,
       formData.newWater,
+      formData.oldWater,
       formData.waterPrice,
     );
   }, [formData.newWater, formData.oldWater, formData.waterPrice]);
 
   const serviceCost = useMemo(() => {
-    return calculateServiceCost(selectedServiceFees);
-  }, [selectedServiceFees]);
+    return calculateServiceCost(
+      selectedServiceFees,
+      formData.serviceQuantities,
+    );
+  }, [selectedServiceFees, formData.serviceQuantities]);
 
   const totalCost = useMemo(() => {
     return calculateInvoiceTotal(

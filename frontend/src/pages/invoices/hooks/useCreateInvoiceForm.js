@@ -106,6 +106,18 @@ export const useCreateInvoiceForm = (roomOptions, serviceOptions) => {
     setSuccessMessage("");
   };
 
+  const handleServiceQuantityChange = (serviceId, quantity) => {
+    setFormData((prev) => ({
+      ...prev,
+      serviceQuantities: {
+        ...prev.serviceQuantities,
+        [serviceId]: quantity,
+      },
+    }));
+    clearFieldErrors("serviceQuantities");
+    setSuccessMessage("");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -164,6 +176,7 @@ export const useCreateInvoiceForm = (roomOptions, serviceOptions) => {
 
     handleChange,
     handleServiceChange,
+    handleServiceQuantityChange,
     handleSubmit,
 
     getInputClass,
