@@ -6,8 +6,8 @@ import { useAuth } from "../../context/AuthContext";
 const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-
   const [form, setForm] = useState({ username: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +23,6 @@ const LoginPage = () => {
     try {
       const data = await loginApi(form.username, form.password);
       login(data.user, data.token);
-      // Điều hướng theo role
       if (data.user.role === "ADMIN") navigate("/admin/dashboard");
       else navigate("/invoices");
     } catch (err) {
@@ -46,9 +45,7 @@ const LoginPage = () => {
           >
             <i className="bi bi-house-door-fill fs-3" style={{ color: "#0f7f5f" }}></i>
           </div>
-          <h4 className="fw-bold mb-1" style={{ color: "#0f7f5f" }}>
-            Quản lý phòng trọ
-          </h4>
+          <h4 className="fw-bold mb-1" style={{ color: "#0f7f5f" }}>Quản lý phòng trọ</h4>
           <p className="text-muted small">Đăng nhập để tiếp tục</p>
         </div>
 
@@ -62,28 +59,33 @@ const LoginPage = () => {
           <div className="mb-3">
             <label className="form-label fw-semibold small">Tên đăng nhập</label>
             <input
-              type="text"
-              name="username"
-              className="form-control rounded-3"
-              placeholder="Nhập tên đăng nhập"
-              value={form.username}
-              onChange={handleChange}
-              required
-              autoFocus
+              type="text" name="username" className="form-control rounded-3"
+              placeholder="Nhập tên đăng nhập" value={form.username}
+              onChange={handleChange} required autoFocus
             />
           </div>
 
           <div className="mb-4">
             <label className="form-label fw-semibold small">Mật khẩu</label>
-            <input
-              type="password"
-              name="password"
-              className="form-control rounded-3"
-              placeholder="Nhập mật khẩu"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                className="form-control rounded-start-3"
+                placeholder="Nhập mật khẩu"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                className="btn btn-outline-secondary rounded-end-3"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+              </button>
+            </div>
           </div>
 
           <button
@@ -92,19 +94,15 @@ const LoginPage = () => {
             style={{ background: "#0f7f5f", color: "#fff" }}
             disabled={loading}
           >
-            {loading ? (
-              <><span className="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...</>
-            ) : (
-              "Đăng nhập"
-            )}
+            {loading
+              ? <><span className="spinner-border spinner-border-sm me-2"></span>Đang đăng nhập...</>
+              : "Đăng nhập"}
           </button>
         </form>
 
         <p className="text-center text-muted small mt-3 mb-0">
           Chưa có tài khoản?{" "}
-          <Link to="/register" style={{ color: "#0f7f5f", fontWeight: 600 }}>
-            Đăng ký ngay
-          </Link>
+          <Link to="/register" style={{ color: "#0f7f5f", fontWeight: 600 }}>Đăng ký ngay</Link>
         </p>
       </div>
     </div>

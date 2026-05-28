@@ -5,7 +5,8 @@ import { USER_ROLE } from "../constants/enums.js";
 
 // Tạo JWT token
 const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+  const secret = process.env.JWT_SECRET || "phongtro_secret_2024";
+  return jwt.sign({ id: userId }, secret, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 };

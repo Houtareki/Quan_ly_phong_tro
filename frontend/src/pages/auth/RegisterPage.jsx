@@ -6,16 +6,12 @@ import { useAuth } from "../../context/AuthContext";
 const RegisterPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-
   const [form, setForm] = useState({
-    username: "",
-    password: "",
-    confirmPassword: "",
-    fullname: "",
-    phone: "",
-    email: "",
-    role: "TENANT",
+    username: "", password: "", confirmPassword: "",
+    fullname: "", phone: "", email: "", role: "TENANT",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -71,56 +67,58 @@ const RegisterPage = () => {
           <div className="row g-3">
             <div className="col-12">
               <label className="form-label fw-semibold small">Họ và tên <span className="text-danger">*</span></label>
-              <input
-                type="text" name="fullname" className="form-control rounded-3"
-                placeholder="Nguyễn Văn A" value={form.fullname}
-                onChange={handleChange} required
-              />
+              <input type="text" name="fullname" className="form-control rounded-3"
+                placeholder="Nguyễn Văn A" value={form.fullname} onChange={handleChange} required />
             </div>
 
             <div className="col-12">
               <label className="form-label fw-semibold small">Tên đăng nhập <span className="text-danger">*</span></label>
-              <input
-                type="text" name="username" className="form-control rounded-3"
-                placeholder="username123" value={form.username}
-                onChange={handleChange} required
-              />
+              <input type="text" name="username" className="form-control rounded-3"
+                placeholder="username123" value={form.username} onChange={handleChange} required />
             </div>
 
             <div className="col-md-6">
               <label className="form-label fw-semibold small">Mật khẩu <span className="text-danger">*</span></label>
-              <input
-                type="password" name="password" className="form-control rounded-3"
-                placeholder="••••••••" value={form.password}
-                onChange={handleChange} required
-              />
+              <div className="input-group">
+                <input
+                  type={showPassword ? "text" : "password"} name="password"
+                  className="form-control rounded-start-3" placeholder="••••••••"
+                  value={form.password} onChange={handleChange} required
+                />
+                <button type="button"
+                  className="btn btn-outline-secondary rounded-end-3"
+                  onClick={() => setShowPassword(!showPassword)} tabIndex={-1}>
+                  <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                </button>
+              </div>
             </div>
 
             <div className="col-md-6">
               <label className="form-label fw-semibold small">Xác nhận mật khẩu <span className="text-danger">*</span></label>
-              <input
-                type="password" name="confirmPassword" className="form-control rounded-3"
-                placeholder="••••••••" value={form.confirmPassword}
-                onChange={handleChange} required
-              />
+              <div className="input-group">
+                <input
+                  type={showConfirm ? "text" : "password"} name="confirmPassword"
+                  className="form-control rounded-start-3" placeholder="••••••••"
+                  value={form.confirmPassword} onChange={handleChange} required
+                />
+                <button type="button"
+                  className="btn btn-outline-secondary rounded-end-3"
+                  onClick={() => setShowConfirm(!showConfirm)} tabIndex={-1}>
+                  <i className={`bi ${showConfirm ? "bi-eye-slash" : "bi-eye"}`}></i>
+                </button>
+              </div>
             </div>
 
             <div className="col-md-6">
               <label className="form-label fw-semibold small">Số điện thoại</label>
-              <input
-                type="tel" name="phone" className="form-control rounded-3"
-                placeholder="0912345678" value={form.phone}
-                onChange={handleChange}
-              />
+              <input type="tel" name="phone" className="form-control rounded-3"
+                placeholder="0912345678" value={form.phone} onChange={handleChange} />
             </div>
 
             <div className="col-md-6">
               <label className="form-label fw-semibold small">Email</label>
-              <input
-                type="email" name="email" className="form-control rounded-3"
-                placeholder="email@example.com" value={form.email}
-                onChange={handleChange}
-              />
+              <input type="email" name="email" className="form-control rounded-3"
+                placeholder="email@example.com" value={form.email} onChange={handleChange} />
             </div>
 
             <div className="col-12">
@@ -132,15 +130,13 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          <button
-            type="submit"
+          <button type="submit"
             className="btn w-100 fw-bold rounded-3 py-2 mt-4"
             style={{ background: "#0f7f5f", color: "#fff" }}
-            disabled={loading}
-          >
-            {loading ? (
-              <><span className="spinner-border spinner-border-sm me-2"></span>Đang đăng ký...</>
-            ) : "Đăng ký"}
+            disabled={loading}>
+            {loading
+              ? <><span className="spinner-border spinner-border-sm me-2"></span>Đang đăng ký...</>
+              : "Đăng ký"}
           </button>
         </form>
 
