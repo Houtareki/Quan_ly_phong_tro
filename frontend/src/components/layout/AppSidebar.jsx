@@ -11,12 +11,16 @@ const MENU = {
       icon: "bi bi-house-check-fill",
       path: "/admin/rooms/approval",
     },
-    { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/invoices" },
-    { label: "Báo cáo", icon: "bi bi-bar-chart-fill", path: "/dashboard" },
   ],
   LANDLORD: [
     { label: "Tổng quan", icon: "bi bi-grid-fill", path: "/dashboard" },
     { label: "Quản lý phòng", icon: "bi bi-house-door-fill", path: "/rooms" },
+    {
+      label: "Hợp đồng",
+      icon: "bi bi-file-earmark-text-fill",
+      path: "/contracts",
+    },
+
     { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/invoices" },
     { label: "Thu chi", icon: "bi bi-cash-coin", path: "/transactions" },
   ],

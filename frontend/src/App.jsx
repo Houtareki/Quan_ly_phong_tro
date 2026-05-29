@@ -33,7 +33,6 @@ const CreateUserPage = lazy(() => import("./pages/admin/CreateUserPage"));
 const RoomApprovalPage = lazy(() => import("./pages/admin/RoomApprovalPage"));
 const DebugUsersPage = lazy(() => import("./pages/auth/DebugUsersPage"));
 
-import PrivateRoute from "./components/common/PrivateRoute";
 import AdminRoute from "./components/common/AdminRoute";
 import TenantRoute from "./components/common/TenantRoute";
 import { useAuth } from "./context/AuthContext";
@@ -153,6 +152,22 @@ function App() {
           element={
             <ManagementRoute>
               <CreateTransactionPage />
+            </ManagementRoute>
+          }
+        />
+        <Route
+          path="/rooms"
+          element={
+            <ManagementRoute>
+              <NotFoundPage />
+            </ManagementRoute>
+          }
+        />
+        <Route
+          path="/contracts"
+          element={
+            <ManagementRoute>
+              <NotFoundPage />
             </ManagementRoute>
           }
         />
