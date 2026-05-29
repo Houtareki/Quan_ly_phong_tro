@@ -70,3 +70,9 @@
 .btn-primary:hover {
   background: #047857;
 }
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}

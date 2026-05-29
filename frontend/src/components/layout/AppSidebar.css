@@ -35,3 +35,11 @@
 .sidebar-btn.active i {
   color: #0b6a4f;
 }
+.app-sidebar {
+  background: #e9f7f1;
+  border-right: 1px solid #d7eee4;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}

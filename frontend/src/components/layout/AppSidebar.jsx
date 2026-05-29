@@ -11,25 +11,21 @@ const MENU = {
     { label: "Báo cáo", icon: "bi bi-bar-chart-fill", path: "/dashboard" },
   ],
   LANDLORD: [
-    { label: "Tổng quan", icon: "bi bi-grid-fill", path: "/dashboard" },
-    { label: "Phòng của tôi", icon: "bi bi-house-door-fill", path: "/rooms" },
-    { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/invoices" },
-    { label: "Hợp đồng", icon: "bi bi-file-earmark-text-fill", path: "/contracts" },
+    { label: "Tổng quan", icon: "bi bi-grid-fill", path: "/landlord/dashboard" },
+    { label: "Quản lý phòng", icon: "bi bi-house-door-fill", path: "/landlord/rooms" },
+    { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/landlord/invoices" },
   ],
   TENANT: [
-    { label: "Tổng quan", icon: "bi bi-grid-fill", path: "/dashboard" },
-    { label: "Tìm phòng", icon: "bi bi-search", path: "/rooms" },
-    { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/invoices" },
-    { label: "Hợp đồng", icon: "bi bi-file-earmark-text-fill", path: "/contracts" },
+    { label: "Phòng của tôi", icon: "bi bi-house-fill", path: "/user/my-room" },
+    { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/user/my-invoices" },
+    { label: "Hỗ trợ", icon: "bi bi-headset", path: "/user/support" },
   ],
 };
 
 const AppSidebar = () => {
-
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
-  const menuItems = MENU[user?.role] || MENU.TENANT;
+  const menuItems = MENU[user?.role] || [];
 
   const handleLogout = () => {
     logout();
@@ -55,9 +51,8 @@ const AppSidebar = () => {
         ))}
       </nav>
 
-      {/* User info + logout */}
       {user && (
-        <div className="mt-auto pt-3 border-top" style={{ borderColor: "#d7eee4 !important" }}>
+        <div className="mt-auto pt-3 border-top">
           <div className="d-flex align-items-center gap-2 mb-2 px-2">
             <div
               className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
