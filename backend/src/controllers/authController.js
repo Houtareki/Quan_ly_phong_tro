@@ -75,10 +75,22 @@ export const login = async (req, res) => {
     return res.status(403).json({ message: "Tài khoản đã bị khoá. Vui lòng liên hệ admin" });
   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.status(401).json({ message: "Tên đăng nhập hoặc mật khẩu không đúng" });
+const isHashed = user.password.startsWith("$2b$") || user.password.startsWith("$2a$");
+
+let isMatch;
+if (isHashed) {
+  isMatch = await bcrypt.compare(password, user.password);
+} else {
+  isMatch = (password === user.password);
+  if (isMatch) {
+    user.password = await bcrypt.hash(password, 10);
+    await user.save();
   }
+}
+
+if (!isMatch) {
+  return res.status(401).json({ message: "Tên đăng nhập hoặc mật khẩu không đúng" });
+}
 
   const token = generateToken(user._id);
 
