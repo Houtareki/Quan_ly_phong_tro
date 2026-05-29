@@ -16,7 +16,9 @@ export const register = async (req, res) => {
   const { username, password, fullname, phone, email, cccd, role } = req.body;
 
   if (!username || !password || !fullname) {
-    return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin bắt buộc" });
+    return res
+      .status(400)
+      .json({ message: "Vui lòng nhập đầy đủ thông tin bắt buộc" });
   }
 
   const existingUser = await User.findOne({ username });
@@ -63,34 +65,43 @@ export const login = async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).json({ message: "Vui lòng nhập tên đăng nhập và mật khẩu" });
+    return res
+      .status(400)
+      .json({ message: "Vui lòng nhập tên đăng nhập và mật khẩu" });
   }
 
   const user = await User.findOne({ username });
   if (!user) {
-    return res.status(401).json({ message: "Tên đăng nhập hoặc mật khẩu không đúng" });
+    return res
+      .status(401)
+      .json({ message: "Tên đăng nhập hoặc mật khẩu không đúng" });
   }
 
   if (!user.isActive) {
-    return res.status(403).json({ message: "Tài khoản đã bị khoá. Vui lòng liên hệ admin" });
+    return res
+      .status(403)
+      .json({ message: "Tài khoản đã bị khoá. Vui lòng liên hệ admin" });
   }
 
-const isHashed = user.password.startsWith("$2b$") || user.password.startsWith("$2a$");
+  const isHashed =
+    user.password.startsWith("$2b$") || user.password.startsWith("$2a$");
 
-let isMatch;
-if (isHashed) {
-  isMatch = await bcrypt.compare(password, user.password);
-} else {
-  isMatch = (password === user.password);
-  if (isMatch) {
-    user.password = await bcrypt.hash(password, 10);
-    await user.save();
+  let isMatch;
+  if (isHashed) {
+    isMatch = await bcrypt.compare(password, user.password);
+  } else {
+    isMatch = password === user.password;
+    if (isMatch) {
+      user.password = await bcrypt.hash(password, 10);
+      await user.save();
+    }
   }
-}
 
-if (!isMatch) {
-  return res.status(401).json({ message: "Tên đăng nhập hoặc mật khẩu không đúng" });
-}
+  if (!isMatch) {
+    return res
+      .status(401)
+      .json({ message: "Tên đăng nhập hoặc mật khẩu không đúng" });
+  }
 
   const token = generateToken(user._id);
 

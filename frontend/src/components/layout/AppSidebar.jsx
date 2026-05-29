@@ -6,18 +6,27 @@ const MENU = {
   ADMIN: [
     { label: "Dashboard", icon: "bi bi-grid-fill", path: "/admin/dashboard" },
     { label: "Quản lý user", icon: "bi bi-people-fill", path: "/admin/users" },
-    { label: "Duyệt phòng", icon: "bi bi-house-check-fill", path: "/admin/rooms/approval" },
+    {
+      label: "Duyệt phòng",
+      icon: "bi bi-house-check-fill",
+      path: "/admin/rooms/approval",
+    },
     { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/invoices" },
     { label: "Báo cáo", icon: "bi bi-bar-chart-fill", path: "/dashboard" },
   ],
   LANDLORD: [
-    { label: "Tổng quan", icon: "bi bi-grid-fill", path: "/landlord/dashboard" },
-    { label: "Quản lý phòng", icon: "bi bi-house-door-fill", path: "/landlord/rooms" },
-    { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/landlord/invoices" },
+    { label: "Tổng quan", icon: "bi bi-grid-fill", path: "/dashboard" },
+    { label: "Quản lý phòng", icon: "bi bi-house-door-fill", path: "/rooms" },
+    { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/invoices" },
+    { label: "Thu chi", icon: "bi bi-cash-coin", path: "/transactions" },
   ],
   TENANT: [
     { label: "Phòng của tôi", icon: "bi bi-house-fill", path: "/user/my-room" },
-    { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/user/my-invoices" },
+    {
+      label: "Hóa đơn",
+      icon: "bi bi-receipt-cutoff",
+      path: "/user/my-invoices",
+    },
     { label: "Hỗ trợ", icon: "bi bi-headset", path: "/user/support" },
   ],
 };
@@ -58,13 +67,21 @@ const AppSidebar = () => {
               className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
               style={{ width: 32, height: 32, background: "#d7eee4" }}
             >
-              <i className="bi bi-person-fill small" style={{ color: "#0f7f5f" }}></i>
+              <i
+                className="bi bi-person-fill small"
+                style={{ color: "#0f7f5f" }}
+              ></i>
             </div>
             <div style={{ minWidth: 0 }}>
-              <div className="fw-semibold small text-truncate" style={{ color: "#0f7f5f" }}>
+              <div
+                className="fw-semibold small text-truncate"
+                style={{ color: "#0f7f5f" }}
+              >
                 {user.fullname}
               </div>
-              <div className="text-muted" style={{ fontSize: 11 }}>{user.role}</div>
+              <div className="text-muted" style={{ fontSize: 11 }}>
+                {user.role}
+              </div>
             </div>
           </div>
           <button
