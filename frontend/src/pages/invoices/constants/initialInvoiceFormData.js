@@ -15,4 +15,5 @@ export const initialInvoiceFormData = {
   newWater: 44,
   waterPrice: 15000,
   selectedServices: ["trash", "parking", "wifi"],
+  serviceQuantities: {},
 };

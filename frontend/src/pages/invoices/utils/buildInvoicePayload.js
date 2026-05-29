@@ -25,7 +25,7 @@ export const buildInvoicePayload = (
     serviceFees: selectedServiceFees.map((service) => ({
       name: service.name,
       price: service.price,
-      quantity: 1,
+      quantity: Number(service.quantity || 1),
     })),
   };
 };

@@ -24,6 +24,7 @@ const InvoiceForm = ({ roomOptions, serviceOptions, formState, onCancel }) => {
 
     handleChange,
     handleServiceChange,
+    handleServiceQuantityChange,
     handleSubmit,
     getInputClass,
     getSelectClass,
@@ -120,7 +121,9 @@ const InvoiceForm = ({ roomOptions, serviceOptions, formState, onCancel }) => {
               <ServiceFeeSelector
                 serviceOptions={serviceOptions}
                 selectedServices={formData.selectedServices}
+                serviceQuantities={formData.serviceQuantities || {}}
                 onServiceChange={handleServiceChange}
+                onServiceQuantityChange={handleServiceQuantityChange}
               />
 
               <InvoiceTotal totalCost={totalCost} />

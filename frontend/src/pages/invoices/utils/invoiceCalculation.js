@@ -14,9 +14,10 @@ export const calculateWaterCost = (oldWater, newWater, waterPrice) => {
   return usedWater * Number(waterPrice || 0);
 };
 
-export const calculateServiceCost = (services = []) => {
+export const calculateServiceCost = (services = [], quantities = {}) => {
   return services.reduce((total, service) => {
-    return total + Number(service.price || 0);
+    const quantity = quantities[service.id] || 1;
+    return total + Number(service.price || 0) * Number(quantity);
   }, 0);
 };
 
