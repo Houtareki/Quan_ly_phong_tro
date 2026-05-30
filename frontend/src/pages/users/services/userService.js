@@ -56,3 +56,5 @@ export const sendSupport = (data) =>
     },
     body: JSON.stringify(data),
   });
+
+export const getMySupportRequests = () => requestJson("/my-support-requests");

@@ -11,6 +11,8 @@ import {
   getPendingRooms,
   approveRoom,
   rejectRoom,
+  getSupportRequests,
+  markSupportRequestRead,
   getStats,
 } from "../controllers/adminController.js";
 
@@ -45,5 +47,9 @@ router.patch("/rooms/:id/approve", approveRoom);
 
 // PATCH /api/admin/rooms/:id/reject   – từ chối duyệt phòng
 router.patch("/rooms/:id/reject", rejectRoom);
+
+// Quản lý yêu cầu hỗ trợ
+router.get("/support-requests", getSupportRequests);
+router.patch("/support-requests/:id/read", markSupportRequestRead);
 
 export default router;

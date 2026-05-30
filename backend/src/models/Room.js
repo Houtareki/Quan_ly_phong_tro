@@ -55,6 +55,11 @@ const roomSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    contractId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Contract",
+      default: null,
+    },
     // Admin duyệt bài: mặc định false, chờ admin approve
     isApproved: {
       type: Boolean,

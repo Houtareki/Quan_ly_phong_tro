@@ -99,4 +99,23 @@ export const rejectRoomApi = async (token, id, note = "") => {
   const body = await res.json();
   if (!res.ok) throw new Error(body.message || "Từ chối thất bại");
   return body;
-};  
+};
+
+export const getSupportRequestsApi = async (token) => {
+  const res = await fetch(`${API_URL}/support/requests`, {
+    headers: authHeader(token),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.message || "Không lấy được yêu cầu hỗ trợ");
+  return body;
+};
+
+export const markSupportRequestReadApi = async (token, id) => {
+  const res = await fetch(`${API_URL}/support/requests/${id}/read`, {
+    method: "PATCH",
+    headers: authHeader(token),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.message || "Không thể đánh dấu là đã đọc");
+  return body;
+};

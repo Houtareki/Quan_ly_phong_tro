@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getMyRoom } from "./services/userService";
+import { getRoomStatusLabel } from "../../utils/roomStatus";
 import "./Style.css";
 
 function MyRoom() {
@@ -66,7 +67,7 @@ function MyRoom() {
             VND
           </p>
           <p>
-            <strong>Trạng thái:</strong> {room.status}
+            <strong>Trạng thái:</strong> {getRoomStatusLabel(room.status)}
           </p>
         </div>
       )}

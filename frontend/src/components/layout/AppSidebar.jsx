@@ -6,6 +6,7 @@ const MENU = {
   ADMIN: [
     { label: "Dashboard", icon: "bi bi-grid-fill", path: "/admin/dashboard" },
     { label: "Quản lý user", icon: "bi bi-people-fill", path: "/admin/users" },
+    { label: "Yêu cầu hỗ trợ", icon: "bi bi-chat-left-text-fill", path: "/support-requests" },
     {
       label: "Duyệt phòng",
       icon: "bi bi-house-check-fill",
@@ -15,17 +16,13 @@ const MENU = {
   LANDLORD: [
     { label: "Tổng quan", icon: "bi bi-grid-fill", path: "/dashboard" },
     { label: "Quản lý phòng", icon: "bi bi-house-door-fill", path: "/rooms" },
-    {
-      label: "Hợp đồng",
-      icon: "bi bi-file-earmark-text-fill",
-      path: "/contracts",
-    },
-
+    { label: "Yêu cầu hỗ trợ", icon: "bi bi-chat-left-text-fill", path: "/support-requests" },
     { label: "Hóa đơn", icon: "bi bi-receipt-cutoff", path: "/invoices" },
     { label: "Thu chi", icon: "bi bi-cash-coin", path: "/transactions" },
   ],
   TENANT: [
     { label: "Phòng của tôi", icon: "bi bi-house-fill", path: "/user/my-room" },
+    { label: "Hợp đồng", icon: "bi bi-file-earmark-text-fill", path: "/user/my-contract" },
     {
       label: "Hóa đơn",
       icon: "bi bi-receipt-cutoff",

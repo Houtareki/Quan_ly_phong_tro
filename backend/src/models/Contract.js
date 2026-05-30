@@ -36,6 +36,10 @@ const contractSchema = new mongoose.Schema(
       enum: Object.values(CONTRACT_STATUS),
       default: CONTRACT_STATUS.ACTIVE,
     },
+    contractImages: [{
+      type: String,
+      default: "",
+    }],
     notes: {
       type: String,
       trim: true,

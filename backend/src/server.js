@@ -16,6 +16,7 @@ import paymentTransactionRoutes from "./routes/paymentTransactionRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import authRoutes from "./routes/authRoutes.js";       // ← thêm
 import adminRoutes from "./routes/adminRoutes.js";     // ← thêm
+import supportRoutes from "./routes/supportRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
 
@@ -29,7 +30,8 @@ app.use(
     credentials: true,
   }),
 );
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.get("/", (req, res) => {
   res.send("Backend quản lý phòng trọ đang chạy");
@@ -43,6 +45,7 @@ app.use("/api/reports", reportRoutes);
 
 app.use("/api/auth", authRoutes);     // ← thêm
 app.use("/api/admin", adminRoutes);   // ← thêm
+app.use("/api/support", supportRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/transactions", transactionRoutes);
 

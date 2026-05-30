@@ -3,7 +3,10 @@ import Room from "../models/Room.js";
 
 export const getRooms = async (req, res) => {
   try {
-    const rooms = await Room.find();
+    const rooms = await Room.find().populate({
+      path: "contractId",
+      populate: { path: "tenantId", select: "fullname username phone email" },
+    });
 
     res
       .status(200)

@@ -16,9 +16,11 @@ const TransactionListPage = lazy(
 const CreateTransactionPage = lazy(
   () => import("./pages/transactions/CreateTransactionPage"),
 );
+const RoomsPage = lazy(() => import("./pages/rooms/RoomsPage"));
 const NotFoundPage = lazy(() => import("./pages/notFound/NotFoundPage"));
 const UserAppLayout = lazy(() => import("./components/layout/UserAppLayout"));
 const MyRoom = lazy(() => import("./pages/users/MyRoom"));
+const MyContract = lazy(() => import("./pages/users/MyContract"));
 const MyInvoices = lazy(() => import("./pages/users/MyInvoices"));
 const Support = lazy(() => import("./pages/users/Support"));
 
@@ -31,6 +33,7 @@ const UsersPage = lazy(() => import("./pages/admin/UsersPage"));
 const UserDetailPage = lazy(() => import("./pages/admin/UserDetailPage"));
 const CreateUserPage = lazy(() => import("./pages/admin/CreateUserPage"));
 const RoomApprovalPage = lazy(() => import("./pages/admin/RoomApprovalPage"));
+const SupportRequestsPage = lazy(() => import("./pages/admin/SupportRequestsPage"));
 const DebugUsersPage = lazy(() => import("./pages/auth/DebugUsersPage"));
 
 import AdminRoute from "./components/common/AdminRoute";
@@ -159,7 +162,15 @@ function App() {
           path="/rooms"
           element={
             <ManagementRoute>
-              <NotFoundPage />
+              <RoomsPage />
+            </ManagementRoute>
+          }
+        />
+        <Route
+          path="/support-requests"
+          element={
+            <ManagementRoute>
+              <SupportRequestsPage />
             </ManagementRoute>
           }
         />
@@ -182,6 +193,7 @@ function App() {
           }
         >
           <Route path="/user/my-room" element={<MyRoom />} />
+          <Route path="/user/my-contract" element={<MyContract />} />
           <Route path="/user/my-invoices" element={<MyInvoices />} />
           <Route
             path="/user/my-invoices/:invoiceId"

@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Room from "../models/Room.js";
 import Contract from "../models/Contract.js";
 import Invoice from "../models/Invoice.js";
+import SupportRequest from "../models/SupportRequest.js";
 import { USER_ROLE, ROOM_STATUS, CONTRACT_STATUS, INVOICE_STATUS } from "../constants/enums.js";
 
 // ─── QUẢN LÝ USER ──────────────────────────────────────────────────────────────
@@ -165,6 +166,31 @@ export const getPendingRooms = async (req, res) => {
       totalPages: Math.ceil(total / Number(limit)),
     },
   });
+};
+
+// GET /api/admin/support-requests
+// Lấy danh sách yêu cầu hỗ trợ của khách thuê
+export const getSupportRequests = async (req, res) => {
+  const supportRequests = await SupportRequest.find()
+    .populate("roomId", "roomCode")
+    .populate("tenantId", "fullname username phone email")
+    .sort({ createdAt: -1 });
+
+  res.json({ message: "Lấy danh sách yêu cầu hỗ trợ thành công", supportRequests });
+};
+
+// PATCH /api/admin/support-requests/:id/read
+// Đánh dấu một yêu cầu hỗ trợ là đã đọc
+export const markSupportRequestRead = async (req, res) => {
+  const supportRequest = await SupportRequest.findById(req.params.id);
+  if (!supportRequest) {
+    return res.status(404).json({ message: "Không tìm thấy yêu cầu hỗ trợ" });
+  }
+
+  supportRequest.isRead = true;
+  await supportRequest.save();
+
+  res.json({ message: "Đã đánh dấu yêu cầu là đã đọc", supportRequest });
 };
 
 // PATCH /api/admin/rooms/:id/approve

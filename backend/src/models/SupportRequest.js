@@ -28,6 +28,10 @@ const supportRequestSchema = new mongoose.Schema(
       enum: Object.values(SUPPORT_STATUS),
       default: SUPPORT_STATUS.PENDING,
     },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );

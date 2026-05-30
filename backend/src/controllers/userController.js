@@ -1,7 +1,8 @@
 import Contract from "../models/Contract.js";
 import Invoice from "../models/Invoice.js";
 import SupportRequest from "../models/SupportRequest.js";
-import { CONTRACT_STATUS, ISSUE_TYPE } from "../constants/enums.js";
+import User from "../models/User.js";
+import { CONTRACT_STATUS, ISSUE_TYPE, USER_ROLE } from "../constants/enums.js";
 
 const DEMO_TENANT_ID = "660000000000000000001101";
 
@@ -66,6 +67,7 @@ export const getMyRoom = async (req, res) => {
                 deposit: contract.deposit,
                 monthlyPrice: contract.monthlyPrice,
                 status: contract.status,
+                contractImages: contract.contractImages || [],
               }
             : null,
         },
@@ -116,6 +118,17 @@ export const getMyInvoices = async (req, res) => {
   }
 };
 
+export const getTenants = async (req, res) => {
+  try {
+    const tenants = await User.find({ role: USER_ROLE.TENANT, isActive: true }).select(
+      "fullname username phone email",
+    );
+    res.status(200).json({ message: "Lấy danh sách khách thuê thành công", data: tenants });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi khi lấy khách thuê", error: error.message });
+  }
+};
+
 export const createSupportRequest = async (req, res) => {
   try {
     const tenantId = getTenantIdFromRequest(req);
@@ -153,6 +166,26 @@ export const createSupportRequest = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Lỗi khi gửi yêu cầu",
+      error: error.message,
+    });
+  }
+};
+
+export const getMySupportRequests = async (req, res) => {
+  try {
+    const tenantId = getTenantIdFromRequest(req);
+
+    const requests = await SupportRequest.find({ tenantId })
+      .populate("roomId", "roomCode roomType")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res
+      .status(200)
+      .json(formatResponse(requests, "Lấy danh sách yêu cầu hỗ trợ thành công"));
+  } catch (error) {
+    res.status(500).json({
+      message: "Lỗi khi lấy yêu cầu hỗ trợ",
       error: error.message,
     });
   }

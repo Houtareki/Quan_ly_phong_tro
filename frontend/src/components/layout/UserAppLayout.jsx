@@ -32,6 +32,16 @@ function UserAppLayout() {
             </NavLink>
 
             <NavLink
+              to="/user/my-contract"
+              className={({ isActive }) =>
+                `btn sidebar-btn d-flex align-items-center gap-2 w-100 ${isActive ? "active" : ""}`
+              }
+            >
+              <i className="bi bi-file-earmark-text-fill"></i>
+              <span>Hợp đồng</span>
+            </NavLink>
+
+            <NavLink
               to="/user/my-invoices"
               className={({ isActive }) =>
                 `btn sidebar-btn d-flex align-items-center gap-2 w-100 ${isActive ? "active" : ""}`
