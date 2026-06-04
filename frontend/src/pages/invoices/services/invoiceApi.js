@@ -108,3 +108,16 @@ export const getInvoicesByRoomId = async (roomId) => {
   const body = await response.json();
   return body.data || [];
 };
+
+export const deleteInvoice = async (invoiceId) => {
+  const response = await fetch(`${API_URL}/invoices/${invoiceId}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Không thể xóa hóa đơn");
+  }
+
+  return response.json();
+};

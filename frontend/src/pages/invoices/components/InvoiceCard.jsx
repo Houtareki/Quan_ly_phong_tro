@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addPayment } from "../services/invoiceApi";
+import { addPayment, deleteInvoice } from "../services/invoiceApi";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { INVOICE_STATUS, getPaymentButtonLabel } from "../utils/invoiceStatus";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +37,25 @@ const InvoiceCard = ({ invoice }) => {
       }, 100);
     } catch (error) {
       alert(error.message || "Thanh toán thất bại!");
+    }
+  };
+
+  const handleDeleteInvoice = async () => {
+    const confirmDelete = window.confirm(
+      `Bạn có chắc chắn muốn xóa hóa đơn tháng ${String(invoice.month).padStart(
+        2,
+        "0",
+      )}/${invoice.year} của phòng ${invoice.roomName}?`,
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteInvoice(invoice.id);
+      alert("Xóa hóa đơn thành công!");
+      window.location.reload();
+    } catch (error) {
+      alert(error.message || "Xóa hóa đơn thất bại!");
     }
   };
 
@@ -79,6 +98,15 @@ const InvoiceCard = ({ invoice }) => {
           </div>
 
           <div className="d-flex justify-content-end gap-2">
+            {invoice.status === INVOICE_STATUS.UNPAID && (
+              <button
+                className="btn btn-outline-danger fw-bold"
+                onClick={handleDeleteInvoice}
+              >
+                Xóa
+              </button>
+            )}
+
             <button
               className="btn btn-light fw-bold"
               onClick={() => navigate(`/invoices/${invoice.id}`)}
