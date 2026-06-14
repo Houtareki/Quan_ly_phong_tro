@@ -101,10 +101,7 @@ const RoomApprovalPage = () => {
                   </div>
 
                   <div className="small text-muted mb-3">
-                    <div className="mb-1">
-                      <i className="bi bi-grid me-2"></i>
-                      <strong>Loại:</strong> {room.roomType || "—"}
-                    </div>
+                    {/* roomType removed from approval view */}
                     <div className="mb-1">
                       <i className="bi bi-rulers me-2"></i>
                       <strong>Diện tích:</strong> {room.area ? `${room.area} m²` : "—"}

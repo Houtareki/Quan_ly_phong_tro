@@ -52,9 +52,6 @@ function MyRoom() {
             <strong>Mã phòng:</strong> {room.roomCode}
           </p>
           <p>
-            <strong>Loại phòng:</strong> {room.roomType}
-          </p>
-          <p>
             <strong>Diện tích:</strong> {room.area || 0} m2
           </p>
           <p>

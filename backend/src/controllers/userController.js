@@ -41,10 +41,12 @@ export const getMyRoom = async (req, res) => {
     const tenantId = getTenantIdFromRequest(req);
     const contract = await findActiveContract(tenantId);
 
-    const latestInvoice = contract?.roomId
-      ? null
-      : await findLatestInvoiceRoom(tenantId);
-    const roomDocument = contract?.roomId || latestInvoice?.roomId;
+    // Only consider active contract as source of truth for "my room".
+    // Previously code fell back to latest invoice which could keep showing
+    // a room after its contract was deleted. That caused tenants to still
+    // see a room even when the contract no longer exists. We remove the
+    // invoice fallback and treat absence of an active contract as "no room".
+    const roomDocument = contract?.roomId || null;
 
     if (!roomDocument) {
       return res
@@ -58,7 +60,7 @@ export const getMyRoom = async (req, res) => {
       formatResponse(
         {
           ...room,
-          tenantId: contract?.tenantId || latestInvoice?.tenantId,
+          tenantId: contract?.tenantId || null,
           contract: contract
             ? {
                 _id: contract._id,
