@@ -5,12 +5,7 @@ import { getRooms, getTenants, createContract, deleteContract } from "../../serv
 import { useAuth } from "../../context/AuthContext";
 import { getRoomStatusLabel } from "../../utils/roomStatus";
 
-const hiddenRoomTypes = ["studio"];
-
-const getVisibleRoomType = (roomType) => {
-  if (!roomType) return null;
-  return hiddenRoomTypes.includes(roomType.toLowerCase()) ? null : roomType;
-};
+// Removed roomType tag display (no visible tags shown)
 
 const fileToBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -48,13 +43,7 @@ const RoomsPage = () => {
     setError("");
     try {
       const data = await getRooms();
-      const filtered = user?.role === "LANDLORD"
-        ? data.filter((r) => {
-            const landlordId = r.landlordId?._id || r.landlordId;
-            return landlordId && String(landlordId) === String(user._id);
-          })
-        : data;
-      setRooms(filtered);
+      setRooms(data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -241,11 +230,7 @@ const RoomsPage = () => {
                   <div className="d-flex justify-content-between align-items-start mb-3">
                     <div>
                       <h6 className="fw-bold mb-1">{room.roomCode}</h6>
-                      {getVisibleRoomType(room.roomType) ? (
-                        <span className="badge bg-light text-dark rounded-pill px-3 small">
-                          {getVisibleRoomType(room.roomType)}
-                        </span>
-                      ) : null}
+                      {/* roomType tags intentionally hidden */}
                     </div>
                     <div className="text-end">
                       <div className="fw-bold" style={{ color: "#0f7f5f" }}>
