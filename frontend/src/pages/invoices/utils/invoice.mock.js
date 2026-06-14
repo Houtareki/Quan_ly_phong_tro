@@ -1,4 +1,4 @@
-import { INVOICE_STATUS } from "../utils/invoiceStatus";
+import { INVOICE_STATUS } from "./invoiceUtils";
 
 export const sampleInvoices = [
   {

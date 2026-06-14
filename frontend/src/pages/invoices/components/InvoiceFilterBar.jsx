@@ -1,4 +1,4 @@
-import { filterOptions } from "../utils/invoiceStatus";
+import { filterOptions } from "../utils/invoiceUtils";
 import "./InvoiceFilterBar.css";
 
 const InvoiceFilterBar = ({

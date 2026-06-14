@@ -1,4 +1,4 @@
-import { getStatusClass, getStatusLabel } from "../utils/invoiceStatus";
+import { getStatusClass, getStatusLabel } from "../utils/invoiceUtils";
 import "./InvoiceStatusBadge.css";
 
 const InvoiceStatusBadge = ({ status }) => {

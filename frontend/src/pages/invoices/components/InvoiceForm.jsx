@@ -1,4 +1,4 @@
-import { electricFields, waterFields } from "../constants/invoiceFormFields";
+import { electricFields, waterFields } from "../utils/invoiceConstants";
 
 import PeriodSelector from "./form/PeriodSelector";
 import FormAlert from "./form/FormAlert";

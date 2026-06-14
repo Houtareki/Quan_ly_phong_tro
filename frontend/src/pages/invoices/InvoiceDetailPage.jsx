@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { getInvoiceById } from "./services/invoiceApi";
-import { electricFields, waterFields } from "./constants/invoiceFormFields";
+import { getInvoiceById } from "./utils/invoiceApi";
+import { electricFields, waterFields } from "./utils/invoiceConstants";
 import {
   calculateElectricCost,
   calculateWaterCost,
-} from "./utils/invoiceCalculation";
+} from "./utils/invoiceUtils";
 
 import AppLayout from "../../components/layout/AppLayout";
 import InvoiceStatusBadge from "./components/InvoiceStatusBadge";

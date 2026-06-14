@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { addPayment, deleteInvoice } from "../services/invoiceApi";
+import { addPayment, deleteInvoice } from "../utils/invoiceApi";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { INVOICE_STATUS, getPaymentButtonLabel } from "../utils/invoiceStatus";
+import { INVOICE_STATUS, getPaymentButtonLabel } from "../utils/invoiceUtils";
 import { useNavigate } from "react-router-dom";
 
 import InvoiceStatusBadge from "./InvoiceStatusBadge";
